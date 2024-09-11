@@ -1,11 +1,12 @@
 
 # ignore all files except source code
 
-sourcecode/*
+*
 
-!sourcecode/*.c
-!sourcecode/*.h
-!sourcecode/makefile
+!*/
+!*.c
+!*.h
+!makefile
 
 
 # other files
