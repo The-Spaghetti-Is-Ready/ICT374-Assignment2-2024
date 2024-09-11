@@ -1,0 +1,14 @@
+
+# ignore all files except source code
+
+sourcecode/*
+
+!sourcecode/*.c
+!sourcecode/*.h
+!sourcecode/makefile
+
+
+# other files
+
+*.log
+*.env
