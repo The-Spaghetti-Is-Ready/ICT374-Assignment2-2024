@@ -1,4 +1,4 @@
-CC = clang
+CC = gcc
 CFLAGS = -Wextra -Wall -Wpedantic
 
 a2-part2: main.o
