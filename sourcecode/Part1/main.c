@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "commandfunctions.h"
 
 int main()
 {
