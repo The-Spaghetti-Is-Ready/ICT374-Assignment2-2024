@@ -1,11 +1,21 @@
 CC = gcc
 CFLAGS = -Wextra -Wall -Wpedantic
 
-a2-part1: main.o command.o commandfunctions.o
-	$(CC) $(CFLAGS) -o a2-part1 main.o
+INCLUDE_DIR = include
+BUILD_DIR = out
 
-main.o: main.c command.h commandfunctions.h
+SOURCES = *.c
+LIBS = $(INCLUDE_DIR)/*.h
 
-command.o: command.h
 
-commandfunctions.o: commandfunctions.c commandfunctions.h
+#EXECUTABLE BUILD SETTINGS
+a2-part1: main.o commandfunctions.o
+	$(CC) $(CFLAGS) -o a2-part1 $(BUILD_DIR)/main.o $(BUILD_DIR)/commandfunctions.o
+
+$(BUILD_DIR)/main.o: $(SOURCES) $(LIBS)
+
+$(BUILD_DIR)/commandfunctions.o: commandfunctions.c $(LIBS)
+
+#if no build dir present, it will make it
+$(BUILD_DIR):
+	mkdir -p $@
