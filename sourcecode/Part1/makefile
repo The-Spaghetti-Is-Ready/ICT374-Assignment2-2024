@@ -1,21 +1,28 @@
 CC = gcc
-CFLAGS = -Wextra -Wall -Wpedantic
+CFLAGS = -Iinclude -Wall -Wextra -MMD -MP
 
 INCLUDE_DIR = include
 BUILD_DIR = out
 
-SOURCES = *.c
-LIBS = $(INCLUDE_DIR)/*.h
+SOURCES = $(wildcard *.c)
+OBJS = $(patsubst %.c,$(BUILD_DIR)/%.o,$(SOURCES))
+DEPS = $(OBJS:.o=.d) #make .d files based on .o files 
 
+#build directory settings
+$(BUILD_DIR)/%.o: %.c
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 #EXECUTABLE BUILD SETTINGS
-a2-part1: main.o commandfunctions.o
-	$(CC) $(CFLAGS) -o a2-part1 $(BUILD_DIR)/main.o $(BUILD_DIR)/commandfunctions.o
+all: $(OBJS)
+	$(CC) $(CFLAGS) -o a2-part1 $(OBJS)
 
-$(BUILD_DIR)/main.o: $(SOURCES) $(LIBS)
+.PHONY: clean
 
-$(BUILD_DIR)/commandfunctions.o: commandfunctions.c $(LIBS)
+#clean object and dependency files
+clean:
+	rm -f $(BUILD_DIR)/*.o a2-part1
+	rm -f $(BUILD_DIR)/*.d a2-part1
 
-#if no build dir present, it will make it
-$(BUILD_DIR):
-	mkdir -p $@
+#include dependencies
+-include $(DEPS)
