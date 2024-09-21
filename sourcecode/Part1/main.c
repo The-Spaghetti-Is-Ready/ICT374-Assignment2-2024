@@ -1,4 +1,4 @@
-#include "include/commandfunctions.h"
+#include "include/shellfunctions.h"
 
 int main()
 {

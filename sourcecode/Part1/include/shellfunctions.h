@@ -9,7 +9,13 @@
 #include <sys/types.h>
 #include <string.h>
 
+#define MAX_STR_SIZE 256
 
-
+/**
+ * @brief Get the Input string from user keyboard
+ * 
+ * @return The keyboard input string 
+ */
+char * GetKBInput(); 
 
 #endif
