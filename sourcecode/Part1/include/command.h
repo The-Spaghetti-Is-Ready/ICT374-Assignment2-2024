@@ -3,7 +3,9 @@
 
 #define MAX_ARGS 150
 
-struct Command { 
+#include <stdio.h>
+
+typedef struct Command { 
     char *com_pathname;     // path name of the command
     int argc;               // the number of arguments to the command including command itself
 
@@ -21,7 +23,7 @@ struct Command {
     // '&' - the command is followed by '&'
     // ';' - the command is followed by ';';
     // '|' - the command is followed by '|'.
-};
+} Command;
 
 
 #endif
