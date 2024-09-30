@@ -6,20 +6,20 @@
 #include <stdio.h>
 
 typedef struct Command { 
-    char *com_pathname;     // path name of the command
-    int argc;               // the number of arguments to the command including command itself
+    char *com_pathname_;     // path name of the command
+    int argc_;               // the number of arguments to the command including command itself
 
-    char *argv[MAX_ARGS];   // pointers to strings, each string
+    char *argv_[MAX_ARGS];   // pointers to strings, each string
     // is an argument for the command, including
     // argument "0". The last pointer should be set to NULL. 
 
-    char *redirect_in;      // if this is not NULL, then the standard input
+    char *redirect_in_;      // if this is not NULL, then the standard input
     // is redirected to the given file name
 
-    char *redirect_out;     // if this is not NULL, then the standard output
+    char *redirect_out_;     // if this is not NULL, then the standard output
     // is redirected to the given file name
 
-    char com_suffix;        // ' ' - no command suffix (last command);
+    char com_suffix_;        // ' ' - no command suffix (last command);
     // '&' - the command is followed by '&'
     // ';' - the command is followed by ';';
     // '|' - the command is followed by '|'.

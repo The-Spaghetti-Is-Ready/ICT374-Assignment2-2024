@@ -1,14 +1,14 @@
 #include "include/shellfunctions.h"
 
 int main() {
-    char* promptName = "";
+    char* prompt_name = "";
     Command current_command;
     char* command_history[MAX_COMMAND_HISTORY];
 
-    Init(promptName, command_history);
+    Init(prompt_name, command_history);
             
 
-    FreeShellVars(promptName, command_history);
+    FreeShellVars(prompt_name, command_history);
 
     return 0;
 }
