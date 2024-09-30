@@ -8,7 +8,7 @@
 typedef struct Command { 
     char *com_pathname_;     // path name of the command
     int argc_;               // the number of arguments to the command including command itself
-
+    
     char *argv_[MAX_ARGS];   // pointers to strings, each string
     // is an argument for the command, including
     // argument "0". The last pointer should be set to NULL. 
@@ -24,6 +24,5 @@ typedef struct Command {
     // ';' - the command is followed by ';';
     // '|' - the command is followed by '|'.
 } Command;
-
 
 #endif

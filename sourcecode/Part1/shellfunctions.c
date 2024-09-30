@@ -32,3 +32,13 @@ void ReplaceString(char* new_string, char* current_string) {
     current_string = (char *) malloc(sizeof(new_string) * sizeof(char)); //can allocate here as it would be null by this point
     strcpy(current_string, new_string);
 }
+
+char * GetKBInput() { //get input from keyboard
+    char * input = (char *) malloc(MAX_STR_SIZE * sizeof(char)); //128 character-limit
+
+    fgets(input, MAX_STR_SIZE, stdin);
+    
+    input[strcspn(input, "\n")] = '\0'; //remove newline
+
+    return input;
+}

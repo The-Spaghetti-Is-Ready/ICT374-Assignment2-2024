@@ -42,4 +42,11 @@ void FreeShellVars(char* prompt, char** command_history);
  */
 void ReplaceString(char* new_string, char* current_string);
 
+/**
+ * @brief Get the Input string from user keyboard
+ * 
+ * @return The keyboard input string 
+ */
+char * GetKBInput(); 
+
 #endif
