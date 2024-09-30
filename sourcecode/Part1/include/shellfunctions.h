@@ -15,7 +15,7 @@
 /**
  * @brief Initialize Unix shell environment
  * 
- * @pre The program executable is built
+ * @pre The program executable has been built
  * @post The shell variables are initialized to a usable state
  */
 void Init(char* prompt, char** command_history);
@@ -26,7 +26,7 @@ void Init(char* prompt, char** command_history);
  * @param prompt The shell name
  * @param command_history The shell command history
  * 
- * @pre Shell variables have been allocated
+ * @pre Shell variables have been allocated memory
  * @post Shell variables are freed
  */
 void FreeShellVars(char* prompt, char** command_history);
@@ -37,7 +37,7 @@ void FreeShellVars(char* prompt, char** command_history);
  * @param new_string The new string to be put into old string
  * @param current_string The string to be replaced
  * 
- * @pre All strings are heap-allocated (Unknown user input)
+ * @pre All strings have been heap-allocated (Through unknown-length user input)
  * @post current_string is made null if not already. New_string gets assigned to current_string.
  */
 void ReplaceString(char* new_string, char* current_string);

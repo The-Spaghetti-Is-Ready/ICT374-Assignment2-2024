@@ -7,7 +7,6 @@ int main() {
 
     Init(promptName, command_history);
             
-    printf("hello world!\n");
 
     FreeShellVars(promptName, command_history);
 
