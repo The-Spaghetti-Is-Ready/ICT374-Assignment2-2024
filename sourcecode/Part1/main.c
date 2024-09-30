@@ -2,20 +2,20 @@
 
 int main()
 {
-    char* promptName = "";
+    char* prompt_name = "";
     Command current_command = { "", 0, {""}, "", "", ' ' };
 
     while(1) {
-        if(promptName[0] != '\0') { printf("%s", promptName); }
+        if(prompt_name[0] != '\0') { printf("%s", prompt_name); }
         printf("%%");
 
-        current_command.com_pathname = GetKBInput();
-        if(strcmp(current_command.com_pathname, "exit") == 0) {
+        current_command.com_pathname_ = GetKBInput();
+        if(strcmp(current_command.com_pathname_, "exit") == 0) {
             break;
         }
     }
     
-    free(current_command.com_pathname);
+    free(current_command.com_pathname_);
     printf("goodbye.\n");
 
     return 0;
