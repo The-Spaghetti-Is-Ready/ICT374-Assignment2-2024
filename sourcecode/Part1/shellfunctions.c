@@ -42,3 +42,12 @@ char * GetKBInput() { //get input from keyboard
 
     return input;
 }
+
+void pwd() {
+    char cwd[PATH_MAX]; // PATH_MAX is the maximum number of characters in a path name defined in limits.h 
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        printf("Current working dir: %s\n", cwd);
+    } else {
+        perror("getcwd() error");
+    }
+}
