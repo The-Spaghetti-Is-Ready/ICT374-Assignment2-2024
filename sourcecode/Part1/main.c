@@ -15,6 +15,8 @@ int main()
         current_command.com_pathname_ = GetKBInput();
         if(strcmp(current_command.com_pathname_, "exit") == 0) {
             break;
+        } else if (strcmp(current_command.com_pathname_, "pwd") == 0) {
+            pwd();
         }
     }
     
