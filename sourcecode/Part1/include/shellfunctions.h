@@ -55,9 +55,4 @@ char * GetKBInput();
  */
 void pwd();
 
-/**
- * @brief Change the current working directory, if entered without a path, it will change to the home directory
- */
-void cd(const char* path);
-
 #endif

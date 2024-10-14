@@ -51,17 +51,3 @@ void pwd() {
         perror("getcwd() error");
     }
 }
-
-void cd(const char* path) {
-    // if no path is provided then change to home directory
-    if(path == NULL || strcmp(path, "") == 0) {
-        path = getenv("HOME"); // Get the user's home directory
-    }
-    
-    // change directory
-    if(chdir(path) != 0) {
-        perror("chdir() error"); // print error message if chdir() fails
-    } else {
-        pwd(); // print the current working directory
-    }
-}
