@@ -5,8 +5,10 @@ void initialiseCommand(Command *command) {
     command->argc_ = 0;
     command->redirect_in_ = NULL;
     command->redirect_out_ = NULL;
-    command->com_suffix_ = ' ';
-    memset(command->argv_, NULL, sizeof(command->argv_));
+    command->com_suffix_ = NULL;
+    for (int i = 0; i < sizeof(command->argv_) / sizeof(command->argv_[0]); ++i) {
+        command->argv_[i] = NULL;
+    }
 }
 
 int isSeparator(char* token) {
@@ -41,6 +43,10 @@ int separateCommands(char* tokens[], Command commands[]) {
     }
     
     // TODO: Check for the last token, and figure out what we're doing with it
+    if(!isSeparator(tokens[numToks-1])) {
+        tokens[numToks] = sequentialSeparator; // TODO check here for memory bounds
+        ++numToks;
+    }
 
     // Loop through the tokens
     int first = 0; // The first token of the command
@@ -51,7 +57,6 @@ int separateCommands(char* tokens[], Command commands[]) {
     for (int i = 0; i < numToks; ++i) {
         last = i;
         if (isSeparator(tokens[i])) {
-            printf("is separator\n");
             separator = tokens[i];
 
             // Check for two consecutive separators
@@ -66,8 +71,10 @@ int separateCommands(char* tokens[], Command commands[]) {
 
             // TODO: Account for redirection
             for (int j = 0; j < commands[commandCount].argc_; ++j)
-            {   
-                commands[commandCount].argv_[j] = tokens[first + j];
+            {
+                if(!isSeparator(tokens[first + j])) {
+                    commands[commandCount].argv_[j] = tokens[first + j];
+                }  
             }
 
             ++commandCount;

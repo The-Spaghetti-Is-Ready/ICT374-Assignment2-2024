@@ -8,6 +8,7 @@
 
 
 #include <stdio.h>
+#include <string.h>
 
 typedef struct Command { 
     char *com_pathname_;     // path name of the command
