@@ -53,6 +53,11 @@ void pwd() {
 }
 
 void cd(char* path) {
+    if (path == NULL)
+    {
+        path = getenv("HOME");
+    }
+    
     if(chdir(path) != 0) {
         perror("chdir() error");
     } else {
