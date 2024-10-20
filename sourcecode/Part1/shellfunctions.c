@@ -53,14 +53,9 @@ void pwd() {
 }
 
 void cd(char* path) {
-    DIR *dir = opendir(path);
-    struct dirent *entry;
-
-    if(!dir) {
-        printf("Directory does not exist\n");
-    } 
-
-    while ((entry = readdir(dir)) != NULL) {
-        printf("%s\n", entry->d_name);  // Print the name of the file/directory
+    if(chdir(path) != 0) {
+        perror("chdir() error");
+    } else {
+        printf("Directory changed to %s\n", getcwd(NULL, 0));
     }
 }
