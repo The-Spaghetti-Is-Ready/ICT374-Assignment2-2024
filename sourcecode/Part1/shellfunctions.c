@@ -51,3 +51,16 @@ void pwd() {
         perror("getcwd() error");
     }
 }
+
+void cd(char* path) {
+    DIR *dir = opendir(path);
+    struct dirent *entry;
+
+    if(!dir) {
+        printf("Directory does not exist\n");
+    } 
+
+    while ((entry = readdir(dir)) != NULL) {
+        printf("%s\n", entry->d_name);  // Print the name of the file/directory
+    }
+}
