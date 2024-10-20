@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <string.h>
+#include <limits.h>
 
 #define MAX_COMMAND_HISTORY 100
 #define MAX_STR_SIZE 256
@@ -48,5 +49,10 @@ void ReplaceString(char* new_string, char* current_string);
  * @return The keyboard input string 
  */
 char * GetKBInput(); 
+
+/**
+ * @brief Print the current working directory
+ */
+void pwd();
 
 #endif
