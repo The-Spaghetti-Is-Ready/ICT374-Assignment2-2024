@@ -1,5 +1,5 @@
 /**
- * Implements a stack of strings - lab05 code
+ * Implements a stack of strings - lab05 example code
  */
 
 typedef struct node {
