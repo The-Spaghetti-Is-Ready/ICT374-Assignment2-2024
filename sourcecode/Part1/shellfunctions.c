@@ -1,24 +1,13 @@
 #include "include/shellfunctions.h"
 
-void Init(char* prompt, char** command_history) {
+void Init(char* prompt) {
     prompt = (char*) malloc(MAX_STR_SIZE * sizeof(char));
-    
-    for(int current = 0; current < MAX_COMMAND_HISTORY; ++current) {
-        command_history[current] = (char*) malloc(MAX_STR_SIZE * sizeof(char));
-    }
 }
 
-void FreeShellVars(char* prompt, char** command_history) {
+void FreeShellVars(char* prompt) {
     //free prompt name
     if(prompt[0] != '\0') {
         free(prompt);
-    }
-
-    //free command history
-    for(int current = 0; current < MAX_COMMAND_HISTORY; ++current) {
-        if(command_history[current][0] != '\0') {
-            free(command_history[current]);
-        }
     }
 }
 

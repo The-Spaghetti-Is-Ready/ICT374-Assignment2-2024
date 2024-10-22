@@ -19,7 +19,7 @@
  * @pre The program executable has been built
  * @post The shell variables are initialized to a usable state
  */
-void Init(char* prompt, char** command_history);
+void Init(char* prompt);
 
 /**
  * @brief Frees all the heap-allocated shell variables
@@ -30,7 +30,7 @@ void Init(char* prompt, char** command_history);
  * @pre Shell variables have been allocated memory
  * @post Shell variables are freed
  */
-void FreeShellVars(char* prompt, char** command_history);
+void FreeShellVars(char* prompt);
 
 /**
  * @brief Replaces heap-allocated string with a new specified string.
