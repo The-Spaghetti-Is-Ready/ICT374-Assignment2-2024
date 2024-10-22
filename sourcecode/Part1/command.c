@@ -6,7 +6,9 @@ void initialiseCommand(Command *command) {
     command->redirect_in_ = NULL;
     command->redirect_out_ = NULL;
     command->com_suffix_ = NULL;
-    for (int i = 0; i < sizeof(command->argv_) / sizeof(command->argv_[0]); ++i) {
+    unsigned long int argv_size = sizeof(command->argv_) / sizeof(command->argv_[0]);  //cache the size calculation.
+
+    for (unsigned long int i = 0; i < argv_size; ++i) {
         command->argv_[i] = NULL;
     }
 }
