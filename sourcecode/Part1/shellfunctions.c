@@ -51,3 +51,16 @@ void pwd() {
         perror("getcwd() error");
     }
 }
+
+void cd(char* path) {
+    if (path == NULL)
+    {
+        path = getenv("HOME");
+    }
+    
+    if(chdir(path) != 0) {
+        perror("chdir() error");
+    } else {
+        printf("Directory changed to %s\n", getcwd(NULL, 0));
+    }
+}
