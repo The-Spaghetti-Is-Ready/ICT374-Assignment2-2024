@@ -32,9 +32,7 @@ int main()
                 pwd();
             }
             else if(strcmp(commands[i].com_pathname_, "prompt") == 0) {
-                if(commands[i].argv_[1][0] != '\0') {
-                    ReplaceString(commands[i].argv_[1], &prompt_name);
-                }
+                ReplaceString(commands[i].argv_[1], &prompt_name);
             }
         }
         

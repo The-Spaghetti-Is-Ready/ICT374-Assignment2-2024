@@ -13,9 +13,10 @@ void ReplaceString(char* new_string, char** current_string) {
     {
         free(*current_string); //make string null if it is initialized. Pre-condition is that prompt is in heap.
     }
-
-    *current_string = (char *) malloc(sizeof(new_string) * sizeof(char)); //can allocate here as it would be null by this point
-    strcpy(*current_string, new_string);
+    if(new_string[0] != '\0') {
+        *current_string = (char *) malloc(sizeof(new_string) * sizeof(char)); //can allocate here as it would be null by this point
+        strcpy(*current_string, new_string);
+    }
 }
 
 char * GetKBInput() { //get input from keyboard
