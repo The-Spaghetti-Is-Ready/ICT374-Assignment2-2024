@@ -3,8 +3,9 @@
 int main()
 {
     char* prompt_name = "";
-    char* command_history[MAX_COMMAND_HISTORY];
+    //char* command_history[MAX_COMMAND_HISTORY]; //turn this into a stack
     Command current_command = { "", 0, {""}, "", "", ' ' };
+    Stack *command_history = create_stack();
     
     Init(prompt_name, command_history);
     

@@ -2,6 +2,7 @@
 #define COMMANDFUNCTIONS_H
 
 #include "command.h"
+#include "stack.h"
 
 #include <stdio.h>
 #include <stdlib.h>
