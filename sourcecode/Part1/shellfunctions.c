@@ -106,11 +106,11 @@ void FilterExecution(int current_pid, int *current_child_status, Command command
         if(i == 0) {
             SequentialExecution(current_pid, current_child_status, commands[i]);
         }
-        if(commands[i+1].com_pathname_[0] != '\0' && i < MAX_COMMAND_HISTORY) {
+        if(commands[i].com_pathname_[0] != '\0' && i < MAX_COMMAND_HISTORY) {
             switch(current_suffix) {
                 case ';':
-                    printf("%c\n", current_suffix);
                     SequentialExecution(current_pid, current_child_status, commands[i+1]);
+                    printf("\n");
                 break;
                 case '&':
                     ConcurrentExecution(commands[i+1]);
