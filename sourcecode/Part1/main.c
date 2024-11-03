@@ -6,6 +6,9 @@ extern char **environ;
 
 int main()
 {
+    struct termios terminal_settings;
+    EnableRawMode(&terminal_settings); // This can go into an init function
+
     char* prompt_name = "";
     Command commands[MAX_COMMAND_HISTORY];
     char* tokens[MAX_NUM_TOKENS];
@@ -69,6 +72,6 @@ int main()
     FreeShellVars(prompt_name, command_history);
     free(commands[0].com_pathname_);
     printf("goodbye.\n");
-    
+    DisableRawMode(&terminal_settings);
     return 0;
 }
