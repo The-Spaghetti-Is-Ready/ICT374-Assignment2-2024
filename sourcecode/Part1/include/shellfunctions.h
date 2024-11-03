@@ -60,4 +60,39 @@ void pwd();
  */
 void cd(char* path);
 
+/**
+ * @author Marco
+ * @brief Executes a command using the 'execl' function.
+ * @param command The command to be executed.
+ */
+void ExecuteCommand(Command command);
+
+/**
+ * @author Marco
+ * @brief Excutes a set of commands sequentially based on ';' suffix
+ * @param commmands the command list to execute
+ */
+void SequentialExecution(int current_pid, int* current_child_status, Command command);
+
+/**
+ * @author Marco
+ * @brief Executes a set of commands concurrently based on '&' suffix
+ * @param commands the command to execute
+ */
+void ConcurrentExecution(Command command);
+
+/**
+ * @author Marco
+ * @brief Executes a set of commands and pipes them
+ * @param commands the commands to execute
+ */
+void PipeCommand(Command current_command, Command next_command);
+
+/**
+ * @author Marco
+ * @brief filters through commands array and executes concurrently or sequantially depending on suffix
+ * @param commands the command list to execute
+ */
+void FilterExecution(int current_pid, int *current_child_status, Command commands[]);
+
 #endif
