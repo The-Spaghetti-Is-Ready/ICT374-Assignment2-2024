@@ -8,7 +8,7 @@ int main()
     Command commands[MAX_COMMAND_HISTORY];
     char* tokens[MAX_NUM_TOKENS];
     Command current_command = { "", 0, {""}, "", "", NULL };
-    
+    int current_pid = 0;
     bool shell = true;
 
     for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) {
@@ -37,7 +37,18 @@ int main()
                 ReplaceString(commands[i].argv_[1], &prompt_name);
             }
             else {
-                executeCommand(commands[i]);
+                int * child_status = 0;
+                if ((current_pid = fork()) <  0) 
+                {
+                    perror("fork");
+                    exit(1);
+                }
+                if(current_pid == 0)
+                {
+                    executeCommand(commands[i]);
+                    exit(0);
+                }
+                waitpid(current_pid, child_status, 0); //wait until process changes state/finishes.
             }
         }
         
