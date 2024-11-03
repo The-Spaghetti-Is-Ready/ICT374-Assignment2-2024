@@ -132,4 +132,9 @@ void EnableRawMode(struct termios* orig_termios);
  */
 void DisableRawMode(struct termios* orig_termios);
 
+/**
+ * @brief Read a key from the keyboard
+ * @return The key read
+ */
+int ReadKey();
 #endif

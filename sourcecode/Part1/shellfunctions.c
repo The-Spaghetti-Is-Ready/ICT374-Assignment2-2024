@@ -161,3 +161,9 @@ void EnableRawMode(struct termios* orig_termios) {
 void DisableRawMode(struct termios* orig_termios) {
     tcsetattr(STDIN_FILENO, TCSAFLUSH, orig_termios);
 }
+
+int ReadKey() {
+    int c;
+    read(STDIN_FILENO, &c, 1);
+    return c;
+}
