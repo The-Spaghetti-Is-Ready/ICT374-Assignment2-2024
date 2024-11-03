@@ -2,14 +2,15 @@
 #include "include/token.h"
 #include "include/command.h"
 
+#define MAX_STR_LEN 10000
+
 int main()
 {
     char* prompt_name = "";
     Command commands[MAX_COMMAND_HISTORY];
     char* tokens[MAX_NUM_TOKENS];
     Stack *command_history = create_stack();
-    Command current_command = { "", 0, {""}, "", "", NULL };
-    
+
     for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) {
         initialiseCommand(&commands[i]);
     }
@@ -18,13 +19,25 @@ int main()
         if(prompt_name[0]!= '\0'){ printf("%s ", prompt_name); }
         printf("%%");
 
-        current_command.com_pathname_ = GetKBInput();
-        tokenise(current_command.com_pathname_, tokens);
-        
+        commands[0].com_pathname_ = GetKBInput();
+        push_stack(command_history, commands[0].com_pathname_);
+        tokenise(commands[0].com_pathname_, tokens);
+
         int numCommands = separateCommands(tokens, commands);
+        
+        if(strcmp(commands[0].com_pathname_, "exit") == 0) {
+            break;
+        }
 
         for (int i = 0; i < numCommands; ++i)
         {
+            if(commands[i].argc_ > 0) {
+                printf("Argc: %d\n", commands[i].argc_);
+                for(int j = 0; j < commands[i].argc_; ++j) {
+                    printf("Argv[%d]: %s\n", j, commands[i].argv_[j]);
+                }
+            }
+            
             printf("Command %d: %s\n", i, commands[i].com_pathname_);
             if(strcmp(commands[i].com_pathname_, "cd") == 0) {
                 cd(commands[i].argv_[1]);
@@ -35,16 +48,19 @@ int main()
             else if(strcmp(commands[i].com_pathname_, "prompt") == 0) {
                 ReplaceString(commands[i].argv_[1], &prompt_name);
             }
-        }
-        
-        if(strcmp(current_command.com_pathname_, "exit") == 0) {
-            break;
+            
+            initialiseCommand(&commands[i]);
         }
     }
     
-    FreeShellVars(prompt_name);
-    free(current_command.com_pathname_);
+    // print out command history stack for testing purposes
+    while (!empty_stack(command_history))
+    {
+        printf("%s\n", pop_stack(command_history));
+    }
 
+    FreeShellVars(prompt_name, command_history);
+    free(commands[0].com_pathname_);
     printf("goodbye.\n");
     
     return 0;
