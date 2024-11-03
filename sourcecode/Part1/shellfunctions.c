@@ -1,9 +1,5 @@
 #include "include/shellfunctions.h"
 
-void Init(char* prompt) {
-    prompt = (char*) malloc(MAX_STR_SIZE * sizeof(char));
-}
-
 void FreeShellVars(char* prompt) {
     //free prompt name
     if(prompt[0] != '\0') {
@@ -11,15 +7,15 @@ void FreeShellVars(char* prompt) {
     }
 }
 
-void ReplaceString(char* new_string, char* current_string) {
+void ReplaceString(char* new_string, char** current_string) {
 
-    if(current_string[0] != '\0')
+    if(*current_string[0] != '\0')
     {
-        free(current_string); //make string null if it is initialized. Pre-condition is that prompt is in heap.
+        free(*current_string); //make string null if it is initialized. Pre-condition is that prompt is in heap.
     }
-   
-    current_string = (char *) malloc(sizeof(new_string) * sizeof(char)); //can allocate here as it would be null by this point
-    strcpy(current_string, new_string);
+
+    *current_string = (char *) malloc(sizeof(new_string) * sizeof(char)); //can allocate here as it would be null by this point
+    strcpy(*current_string, new_string);
 }
 
 char * GetKBInput() { //get input from keyboard

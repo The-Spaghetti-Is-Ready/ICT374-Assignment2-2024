@@ -41,7 +41,7 @@ void FreeShellVars(char* prompt);
  * @pre All strings have been heap-allocated (Through unknown-length user input)
  * @post current_string is made null if not already. New_string gets assigned to current_string.
  */
-void ReplaceString(char* new_string, char* current_string);
+void ReplaceString(char* new_string, char** current_string);
 
 /**
  * @brief Get the Input string from user keyboard

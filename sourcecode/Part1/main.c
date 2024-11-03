@@ -9,14 +9,12 @@ int main()
     char* tokens[MAX_NUM_TOKENS];
     Command current_command = { "", 0, {""}, "", "", NULL };
     
-    Init(prompt_name);
-    
     for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) {
         initialiseCommand(&commands[i]);
     }
 
     while(1) {
-        if(prompt_name[0] != '\0') { printf("%s", prompt_name); }
+        if(prompt_name[0]!= '\0'){ printf("%s ", prompt_name); }
         printf("%%");
 
         current_command.com_pathname_ = GetKBInput();
@@ -33,6 +31,11 @@ int main()
             else if(strcmp(commands[i].com_pathname_, "pwd") == 0) {
                 pwd();
             }
+            else if(strcmp(commands[i].com_pathname_, "prompt") == 0) {
+                if(commands[i].argv_[1][0] != '\0') {
+                    ReplaceString(commands[i].argv_[1], &prompt_name);
+                }
+            }
         }
         
         if(strcmp(current_command.com_pathname_, "exit") == 0) {
@@ -42,6 +45,7 @@ int main()
     
     FreeShellVars(prompt_name);
     free(current_command.com_pathname_);
+
     printf("goodbye.\n");
     
     return 0;
