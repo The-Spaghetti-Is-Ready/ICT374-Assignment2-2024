@@ -2,7 +2,7 @@
 #include "include/token.h"
 #include "include/command.h"
 
-#define MAX_STR_LEN 10000
+extern char **environ;
 
 int main()
 {
@@ -20,7 +20,7 @@ int main()
         printf("%%");
 
         commands[0].com_pathname_ = GetKBInput();
-        push_stack(command_history, commands[0].com_pathname_);
+       
         tokenise(commands[0].com_pathname_, tokens);
 
         int numCommands = separateCommands(tokens, commands);
@@ -31,14 +31,14 @@ int main()
 
         for (int i = 0; i < numCommands; ++i)
         {
-            if(commands[i].argc_ > 0) {
-                printf("Argc: %d\n", commands[i].argc_);
-                for(int j = 0; j < commands[i].argc_; ++j) {
-                    printf("Argv[%d]: %s\n", j, commands[i].argv_[j]);
-                }
-            }
-            
-            printf("Command %d: %s\n", i, commands[i].com_pathname_);
+            AddCommandToHistory(command_history, &commands[i]);   
+            // if(commands[i].argc_ > 0) {
+            //     printf("Argc: %d\n", commands[i].argc_);
+            //     for(int j = 0; j < commands[i].argc_; ++j) {
+            //         printf("Argv[%d]: %s\n", j, commands[i].argv_[j]);
+            //     }
+            // }
+
             if(strcmp(commands[i].com_pathname_, "cd") == 0) {
                 cd(commands[i].argv_[1]);
             }
