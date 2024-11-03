@@ -60,3 +60,13 @@ int empty_stack(Stack *stack)
 {
     return stack->size == 0;
 }
+
+// clear the stack 
+void clear_stack(Stack *stack)
+{
+    while (!empty_stack(stack))
+    {
+        pop_stack(stack);
+    }
+}
+

@@ -26,3 +26,6 @@ int size_of_stack(Stack *stack);
 
 // return if the stack is empty
 int empty_stack(Stack *stack);
+
+// clear the stack
+void clear_stack(Stack *stack);
