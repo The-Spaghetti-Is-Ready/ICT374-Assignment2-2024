@@ -57,7 +57,8 @@ void executeCommand(Command command)
     strcat(str_command, "/bin/");
     strcat(str_command, command.com_pathname_);
     
-    execv(str_command, command.argv_);
+    printf("%s, %s\n", command.com_pathname_, command.argv_[1]);
+    execvp(str_command, command.argv_);
 
     free(str_command); //free parsed command
 }

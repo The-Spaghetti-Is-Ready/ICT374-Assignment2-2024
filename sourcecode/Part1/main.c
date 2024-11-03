@@ -9,11 +9,13 @@ int main()
     char* tokens[MAX_NUM_TOKENS];
     Command current_command = { "", 0, {""}, "", "", NULL };
     
+    bool shell = true;
+
     for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) {
         initialiseCommand(&commands[i]);
     }
 
-    while(1) {
+    while(shell) {
         if(prompt_name[0]!= '\0'){ printf("%s ", prompt_name); }
         printf("%%");
 
@@ -35,12 +37,12 @@ int main()
                 ReplaceString(commands[i].argv_[1], &prompt_name);
             }
             else {
-                executeCommand(current_command);
+                executeCommand(commands[i]);
             }
         }
         
         if(strcmp(current_command.com_pathname_, "exit") == 0) {
-            break;
+            shell = false;
         }
     }
     
