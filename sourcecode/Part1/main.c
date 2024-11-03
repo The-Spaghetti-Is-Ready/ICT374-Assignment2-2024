@@ -18,7 +18,7 @@ int main()
 
     while(1) {
         if(prompt_name[0]!= '\0'){ printf("%s ", prompt_name); }
-        printf("%%");
+        printf("%% ");
 
         current_command.com_pathname_ = GetKBInput();
         tokenise(current_command.com_pathname_, tokens);
