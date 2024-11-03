@@ -10,6 +10,10 @@ int main()
     Command commands[MAX_COMMAND_HISTORY];
     char* tokens[MAX_NUM_TOKENS];
     Stack *command_history = create_stack();
+    Command current_command = { "", 0, {""}, "", "", NULL };
+    
+    int current_pid = 0;
+    int * current_child_status = 0;
 
     for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) {
         initialiseCommand(&commands[i]);
@@ -17,7 +21,7 @@ int main()
 
     while(1) {
         if(prompt_name[0]!= '\0'){ printf("%s ", prompt_name); }
-        printf("%%");
+        printf("%% ");
 
         commands[0].com_pathname_ = GetKBInput();
        
@@ -26,6 +30,10 @@ int main()
         int numCommands = separateCommands(tokens, commands);
         
         if(strcmp(commands[0].com_pathname_, "exit") == 0) {
+            break;
+        }
+
+        if(strcmp(current_command.com_pathname_, "exit") == 0) {
             break;
         }
 
@@ -48,7 +56,9 @@ int main()
             else if(strcmp(commands[i].com_pathname_, "prompt") == 0) {
                 ReplaceString(commands[i].argv_[1], &prompt_name);
             }
-            
+            else {
+                FilterExecution(current_pid, current_child_status, commands);
+            }
             initialiseCommand(&commands[i]);
         }
     }
