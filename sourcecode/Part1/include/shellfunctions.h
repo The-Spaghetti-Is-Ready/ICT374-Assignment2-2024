@@ -4,12 +4,13 @@
 #include "command.h"
 #include "stack.h"
 
+#include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
 #include <string.h>
-#include <linux/limits.h>
+#include <sys/types.h>
+#include <termios.h>
+#include <unistd.h>
 
 #define MAX_COMMAND_HISTORY 100
 
