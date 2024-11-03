@@ -51,7 +51,7 @@ void cd(char* path) {
     }
 }
 
-void executeCommand(Command command)
+void ExecuteCommand(Command command)
 {
     char * str_command = (char *) malloc(strlen(command.com_pathname_ + 6) * sizeof(char));
     strcat(str_command, "/bin/");
@@ -60,4 +60,66 @@ void executeCommand(Command command)
     execvp(str_command, command.argv_);
 
     free(str_command); //free parsed command
+}
+
+void SequentialExecution(int current_pid, int* current_child_status, Command command) {
+    if ((current_pid = fork()) <  0) 
+    {
+        perror("fork");
+        exit(1);
+    }
+    if(current_pid == 0)
+    {
+        ExecuteCommand(command);
+        exit(0);
+    }
+    waitpid(current_pid, current_child_status, 0); //wait until process changes state/finishes.
+}
+
+void ConcurrentExecution(Command command) {
+    int current_pid = 0;
+    if ((current_pid = fork()) <  0) 
+    {
+        perror("fork");
+        exit(1);
+    }
+    if(current_pid == 0)
+    {
+        ExecuteCommand(command);
+        exit(0);
+    }
+}
+
+void PipeCommand(Command command) {
+
+}
+
+void FilterExecution(int current_pid, int *current_child_status, Command commands[]) {
+    
+    for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) { 
+        char current_suffix = commands[i].com_suffix_[0];
+
+        if(i == 0) {
+            SequentialExecution(current_pid, current_child_status, commands[i]);
+            continue;
+        }
+        if(commands[i].com_pathname_[0] != '\0' && i < MAX_COMMAND_HISTORY) {
+            switch(current_suffix) {
+                case ';':
+                    SequentialExecution(current_pid, current_child_status, commands[i+1]);
+                break;
+                case '&':
+                    ConcurrentExecution(commands[i+1]);
+                break;
+                case '|':
+                    PipeCommand(commands[i+1]);
+                break;
+                default:
+                    SequentialExecution(current_pid, current_child_status, commands[i]); 
+                    //sequential execution waits for current process to finish, so it's appropriate for default cases 
+                    //where only one command is present
+                break;
+            }
+        }
+    }
 }
