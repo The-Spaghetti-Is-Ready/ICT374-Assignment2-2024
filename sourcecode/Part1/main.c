@@ -42,6 +42,16 @@ int main()
                 ReplaceString(commands[i].argv_[1], &prompt_name);
             }
             else {
+                switch(commands[i].com_suffix_) {
+                    case ';':
+                    break;
+                    case '&':
+                    break;
+                    case '|':
+                    break;
+                    default:
+                    break;
+                }
                 if ((current_pid = fork()) <  0) 
                 {
                     perror("fork");
@@ -49,7 +59,7 @@ int main()
                 }
                 if(current_pid == 0)
                 {
-                    executeCommand(commands[i]);
+                    ExecuteCommand(commands[i]);
                     exit(0);
                 }
                 waitpid(current_pid, current_child_status, 0); //wait until process changes state/finishes.

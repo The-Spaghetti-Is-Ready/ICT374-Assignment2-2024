@@ -65,6 +65,18 @@ void cd(char* path);
  * @brief Executes a command using the 'execl' function.
  * @param command The command to be executed.
  */
-void executeCommand(Command command);
+void ExecuteCommand(Command command);
+
+/**
+ * @author Marco
+ * @brief Excutes a set of commands sequentially based on ';' suffix
+ */
+void SequentialExecution();
+
+/**
+ * @author Marco
+ * @brief Executes a set of commands concurrently based on '&' suffix
+ */
+void ConcurrentExecution();
 
 #endif
