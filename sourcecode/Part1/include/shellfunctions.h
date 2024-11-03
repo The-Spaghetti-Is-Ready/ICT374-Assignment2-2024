@@ -107,4 +107,11 @@ void PipeCommand(Command current_command, Command next_command);
  */
 void FilterExecution(int current_pid, int *current_child_status, Command commands[]);
 
+/**
+ * @brief Enables raw mode
+ * 
+ * @param orig_termios The original terminal settings
+ */
+void EnableRawMode(struct termios* orig_termios);
+
 #endif

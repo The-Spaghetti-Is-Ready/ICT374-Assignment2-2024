@@ -148,3 +148,12 @@ void FilterExecution(int current_pid, int *current_child_status, Command command
         }
     }
 }
+
+void EnableRawMode(struct termios* orig_termios) {
+    struct termios raw;
+
+    tcgetattr(STDIN_FILENO, orig_termios);
+    raw = *orig_termios;
+    raw.c_lflag &= ~(ECHO | ICANON);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+}
