@@ -6,16 +6,17 @@ int main()
 {
     char* prompt_name = "";
     Command commands[MAX_COMMAND_HISTORY];
-    char* tokens[MAX_NUM_TOKENS];
     Command current_command = { "", 0, {""}, "", "", NULL };
+    char* tokens[MAX_NUM_TOKENS];
+    
     int current_pid = 0;
-    bool shell = true;
+    int * current_child_status = 0;
 
     for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) {
         initialiseCommand(&commands[i]);
     }
 
-    while(shell) {
+    while(1) {
         if(prompt_name[0]!= '\0'){ printf("%s ", prompt_name); }
         printf("%%");
 
@@ -37,7 +38,6 @@ int main()
                 ReplaceString(commands[i].argv_[1], &prompt_name);
             }
             else {
-                int * child_status = 0;
                 if ((current_pid = fork()) <  0) 
                 {
                     perror("fork");
@@ -48,12 +48,12 @@ int main()
                     executeCommand(commands[i]);
                     exit(0);
                 }
-                waitpid(current_pid, child_status, 0); //wait until process changes state/finishes.
+                waitpid(current_pid, current_child_status, 0); //wait until process changes state/finishes.
             }
         }
         
         if(strcmp(current_command.com_pathname_, "exit") == 0) {
-            shell = false;
+            break;
         }
     }
     
