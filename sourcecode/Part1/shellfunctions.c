@@ -1,17 +1,14 @@
 #include "include/shellfunctions.h"
 
-void FreeShellVars(char* prompt,  char** command_history) {
+void FreeShellVars(char* prompt,  Stack* command_history) {
     //free prompt name
     if(prompt[0] != '\0') {
         free(prompt);
     }
 
-    //free command history - replace this w the stack implementation later
-    for(int current = 0; current < MAX_COMMAND_HISTORY; ++current) {
-        if(command_history[current][0] != '\0') {
-            free(command_history[current]);
-        }
-    }
+    //free command history stack
+    clear_stack(command_history);
+   
 }
 
 void ReplaceString(char* new_string, char** current_string) {

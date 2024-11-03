@@ -31,7 +31,7 @@ void Init(char* prompt);
  * @pre Shell variables have been allocated memory
  * @post Shell variables are freed
  */
-void FreeShellVars(char* prompt);
+void FreeShellVars(char* prompt, Stack* command_history);
 
 /**
  * @brief Replaces heap-allocated string with a new specified string.
