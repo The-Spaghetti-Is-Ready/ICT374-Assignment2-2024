@@ -33,10 +33,6 @@ int main()
             break;
         }
 
-        if(strcmp(current_command.com_pathname_, "exit") == 0) {
-            break;
-        }
-
         for (int i = 0; i < numCommands; ++i)
         {
             AddCommandToHistory(command_history, &commands[i]);   
@@ -69,6 +65,7 @@ int main()
         printf("%s\n", pop_stack(command_history));
     }
 
+    // Here down can be refactored into a cleanup function
     FreeShellVars(prompt_name, command_history);
     free(commands[0].com_pathname_);
     printf("goodbye.\n");
