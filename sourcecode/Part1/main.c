@@ -2,12 +2,15 @@
 #include "include/token.h"
 #include "include/command.h"
 
+extern char **environ;
+
 int main()
 {
     char* prompt_name = "";
     Command commands[MAX_COMMAND_HISTORY];
-    Command current_command = { "", 0, {""}, "", "", NULL };
     char* tokens[MAX_NUM_TOKENS];
+    Stack *command_history = create_stack();
+    Command current_command = { "", 0, {""}, "", "", NULL };
     
     int current_pid = 0;
     int * current_child_status = 0;
@@ -20,10 +23,15 @@ int main()
         if(prompt_name[0]!= '\0'){ printf("%s ", prompt_name); }
         printf("%% ");
 
-        current_command.com_pathname_ = GetKBInput();
-        tokenise(current_command.com_pathname_, tokens);
-        
+        commands[0].com_pathname_ = GetKBInput();
+       
+        tokenise(commands[0].com_pathname_, tokens);
+
         int numCommands = separateCommands(tokens, commands);
+        
+        if(strcmp(commands[0].com_pathname_, "exit") == 0) {
+            break;
+        }
 
         if(strcmp(current_command.com_pathname_, "exit") == 0) {
             break;
@@ -31,7 +39,14 @@ int main()
 
         for (int i = 0; i < numCommands; ++i)
         {
-            printf("Command %d: %s\n", i, commands[i].com_pathname_);
+            AddCommandToHistory(command_history, &commands[i]);   
+            // if(commands[i].argc_ > 0) {
+            //     printf("Argc: %d\n", commands[i].argc_);
+            //     for(int j = 0; j < commands[i].argc_; ++j) {
+            //         printf("Argv[%d]: %s\n", j, commands[i].argv_[j]);
+            //     }
+            // }
+
             if(strcmp(commands[i].com_pathname_, "cd") == 0) {
                 cd(commands[i].argv_[1]);
             }
@@ -48,9 +63,14 @@ int main()
         }
     }
     
-    FreeShellVars(prompt_name);
-    free(current_command.com_pathname_);
+    // print out command history stack for testing purposes
+    while (!empty_stack(command_history))
+    {
+        printf("%s\n", pop_stack(command_history));
+    }
 
+    FreeShellVars(prompt_name, command_history);
+    free(commands[0].com_pathname_);
     printf("goodbye.\n");
     
     return 0;

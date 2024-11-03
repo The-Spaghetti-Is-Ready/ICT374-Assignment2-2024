@@ -1,10 +1,14 @@
 #include "include/shellfunctions.h"
 
-void FreeShellVars(char* prompt) {
+void FreeShellVars(char* prompt,  Stack* command_history) {
     //free prompt name
     if(prompt[0] != '\0') {
         free(prompt);
     }
+
+    //free command history stack
+    clear_stack(command_history);
+   
 }
 
 void ReplaceString(char* new_string, char** current_string) {
@@ -21,7 +25,7 @@ void ReplaceString(char* new_string, char** current_string) {
 
 char * GetKBInput() { //get input from keyboard
     char * input = (char *) malloc(MAX_STR_SIZE * sizeof(char)); //128 character-limit
-
+    
     fgets(input, MAX_STR_SIZE, stdin);
     
     input[strcspn(input, "\n")] = '\0'; //remove newline
@@ -51,8 +55,24 @@ void cd(char* path) {
     }
 }
 
-void ExecuteCommand(Command command)
-{
+void AddCommandToHistory(Stack* stack, Command* command) {
+    char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
+    
+    for(int i = 0; i < command->argc_; ++i) {
+        if(command->argv_[i] != NULL) {
+            strcat(commandString, command->argv_[i]);
+            if(i < command->argc_ - 1) {
+                strcat(commandString, " ");
+            }
+        }
+    }
+    
+    printf("Command String: %s\n", commandString);
+    push_stack(stack, commandString);
+    free(commandString);
+}
+
+void ExecuteCommand(Command command) {
     char * str_command = (char *) malloc(strlen(command.com_pathname_ + 6) * sizeof(char));
     strcat(str_command, "/bin/");
     strcat(str_command, command.com_pathname_);
