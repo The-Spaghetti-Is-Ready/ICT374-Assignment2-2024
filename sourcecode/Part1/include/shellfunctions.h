@@ -60,16 +60,25 @@ void ReplaceString(char* new_string, char** current_string);
 char * GetKBInput(); 
 
 /**
+ * @author Niamh
  * @brief Print the current working directory
  */
 void pwd();
 
 /**
+ * @author Niamh
  * @brief Change the current working directory
  * @param path The path to change to
  */
 void cd(char* path);
 
+/**
+ * @author Niamh
+ * @brief Adds a command to the command history stack
+ * 
+ * @param stack The stack to add the command to
+ * @param command The command to add to the stack
+ */
 void AddCommandToHistory(Stack* stack, Command* command);
 
 /**
@@ -108,10 +117,19 @@ void PipeCommand(Command current_command, Command next_command);
 void FilterExecution(int current_pid, int *current_child_status, Command commands[]);
 
 /**
+ * @author Niamh
  * @brief Enables raw mode
  * 
  * @param orig_termios The original terminal settings
  */
 void EnableRawMode(struct termios* orig_termios);
+
+/**
+ * @author Niamh
+ * @brief Disables raw mode
+ * 
+ * @param orig_termios The original terminal settings
+ */
+void DisableRawMode(struct termios* orig_termios);
 
 #endif

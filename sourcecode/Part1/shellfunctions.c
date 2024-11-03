@@ -157,3 +157,7 @@ void EnableRawMode(struct termios* orig_termios) {
     raw.c_lflag &= ~(ECHO | ICANON);
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
+
+void DisableRawMode(struct termios* orig_termios) {
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, orig_termios);
+}
