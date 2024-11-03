@@ -34,6 +34,9 @@ int main()
             else if(strcmp(commands[i].com_pathname_, "prompt") == 0) {
                 ReplaceString(commands[i].argv_[1], &prompt_name);
             }
+            else {
+                executeCommand(current_command);
+            }
         }
         
         if(strcmp(current_command.com_pathname_, "exit") == 0) {

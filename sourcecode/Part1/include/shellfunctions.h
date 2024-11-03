@@ -60,4 +60,11 @@ void pwd();
  */
 void cd(char* path);
 
+/**
+ * @author Marco
+ * @brief Executes a command using the 'execl' function.
+ * @param command The command to be executed.
+ */
+void executeCommand(Command command);
+
 #endif

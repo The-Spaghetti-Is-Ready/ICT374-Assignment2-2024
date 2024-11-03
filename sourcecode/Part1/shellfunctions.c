@@ -50,3 +50,14 @@ void cd(char* path) {
         printf("Directory changed to %s\n", getcwd(NULL, 0));
     }
 }
+
+void executeCommand(Command command)
+{
+    char * str_command = (char *) malloc(strlen(command.com_pathname_ + 6) * sizeof(char));
+    strcat(str_command, "/bin/");
+    strcat(str_command, command.com_pathname_);
+    
+    execv(str_command, command.argv_);
+
+    free(str_command); //free parsed command
+}
