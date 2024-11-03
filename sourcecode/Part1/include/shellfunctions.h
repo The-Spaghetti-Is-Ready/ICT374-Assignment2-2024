@@ -12,7 +12,14 @@
 #include <linux/limits.h>
 
 #define MAX_COMMAND_HISTORY 100
-#define MAX_STR_SIZE 256
+
+#if defined(LINE_MAX)
+    #define MAX_STR_SIZE LINE_MAX
+#elif defined(_POSIX_ARG_MAX)
+    #define MAX_STR_SIZE _POSIX_ARG_MAX / sizeof(char)
+#else
+    #define MAX_STR_SIZE 4096  // Default to 4096 if neither is available
+#endif
 
 /**
  * @brief Initialize Unix shell environment
@@ -58,7 +65,10 @@ void pwd();
 
 /**
  * @brief Change the current working directory
+ * @param path The path to change to
  */
 void cd(char* path);
+
+void AddCommandToHistory(Stack* stack, Command* command);
 
 #endif
