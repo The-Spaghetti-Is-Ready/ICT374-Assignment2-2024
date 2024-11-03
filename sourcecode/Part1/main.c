@@ -26,6 +26,48 @@ int main()
         if(prompt_name[0]!= '\0'){ printf("%s ", prompt_name); }
         printf("%% ");
 
+        char c;
+        int history_index = 0;
+        char input_buffer[MAX_STR_SIZE] = {0};
+        int input_length = 0;
+
+        while(read(STDIN_FILENO, &c, 1) == 1 && c != '\n') {
+            // If the user presses escape
+            if(c == 27) { // can this be a switch case? or is it an if statement cause its only one?
+                printf("Escape key pressed\n");
+
+                char seq[3];
+                if (read(STDIN_FILENO, &seq[0], 1) != 1) continue;
+                if (read(STDIN_FILENO, &seq[1], 1) != 1) continue;
+
+                if(seq[0] == '[') {
+                    if(seq[1] == 'A') {
+                        // Up arrow
+                         printf("Up arrow pressed\n");
+                        // if(history_index > 0) {
+                        //     history_index--;
+                           
+                        //     //printf("\r%s", command_history->items[history_index]);
+                        // }
+                    }
+                    else if(seq[1] == 'B') {
+                        // Down arrow
+                        printf("Down arrow pressed\n");
+                        // if(history_index < size_of_stack(command_history)) {
+                        //     history_index++;
+                            
+                        //     //printf("\r%s", command_history->items[history_index]);
+                        // }
+                    }
+                }
+            } else {
+                input_buffer[input_length] = c;
+                input_length++;
+                write(STDOUT_FILENO, &c, 1);
+            }
+        } 
+
+
         commands[0].com_pathname_ = GetKBInput();
        
         tokenise(commands[0].com_pathname_, tokens);
