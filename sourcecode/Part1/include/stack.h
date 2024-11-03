@@ -1,14 +1,16 @@
 /**
- * Implements a stack of strings - lab05 example code
+ * Implements a stack of strings using a double linked list
  */
 
 typedef struct node {
     char *data;
     struct node *next;
+    struct node *prev;
 } Node;
 
 typedef struct stack {
     Node *top;
+    Node *bottom;
     int size;
 } Stack;
 

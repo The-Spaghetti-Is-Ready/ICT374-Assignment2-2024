@@ -5,55 +5,67 @@
 
 Stack *create_stack()
 {
-     Stack *s;
-
-     s = malloc(sizeof(Stack));
-
+     Stack *s = (Stack *)malloc(sizeof(Stack));
      if (s==NULL) {
-         fprintf(stderr, "No more memory - quit\n");
-         exit(1);
+         fprintf(stderr, "Stack malloc error\n");
+         exit(EXIT_FAILURE);
      }
 
      s->top = NULL;
+     s->bottom = NULL;
      s->size = 0;
      return s;
 }
 
 void push_stack(Stack *stack, char *str)
 {
-    Node *newNode;
-
-    newNode = malloc(sizeof(Node));
+    Node *newNode = (Node *)malloc(sizeof(Node));
     if (newNode == NULL) {
-        fprintf(stderr, "No more memory - quit!\n");
-        exit(1);
+        fprintf(stderr, "Node malloc error\n");
+        exit(EXIT_FAILURE);
     }
+
     newNode->data = strdup(str); // Allocate memory and copy the string
     if(newNode->data == NULL) {
-        fprintf(stderr, "No more memory - quit!\n");
+        fprintf(stderr, "Memory allocation error\n");
         free(newNode);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     newNode->next = stack->top;
+    newNode->prev = NULL;
+
+    if (stack->top != NULL) {
+        stack->top->prev = newNode;
+    }
     stack->top = newNode;
+
+    if (stack->bottom == NULL) {
+        stack->bottom = newNode;
+    }
+
     stack->size += 1;
 }
 
 char *pop_stack(Stack *stack)
 {
-    Node *np;
-    char *str;
-
-    if (empty_stack(stack))
+    if(empty_stack(stack)) {
         return NULL;
+    }
 
-    np = stack->top;
+    Node *np = stack->top;
+    char *str = np->data;
+
     stack->top = np->next;
-    str = np->data;
-    free(np); // Free the node itself
-    stack->size -= 1;
-    return str;
+    if (stack->top != NULL) {
+        stack->top->prev = NULL;
+    } else {
+        stack->bottom = NULL;
+    }
+   
+   free(np); // Free the node itself
+   stack->size -= 1;
+   return str;
 }
 
 int size_of_stack(Stack *stack)
