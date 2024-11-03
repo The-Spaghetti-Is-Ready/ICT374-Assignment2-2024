@@ -96,16 +96,22 @@ void PipeCommand(Command command) {
 
 void FilterExecution(int current_pid, int *current_child_status, Command commands[]) {
     
-    for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) { 
-        char current_suffix = commands[i].com_suffix_[0];
+    char current_suffix = ' ';
 
-        if(i == 0) {
-            SequentialExecution(current_pid, current_child_status, commands[i]);
-            continue;
+    for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) { 
+        if(commands[i].com_suffix_ != NULL) {
+            current_suffix = commands[i].com_suffix_[0];
         }
-        if(commands[i].com_pathname_[0] != '\0' && i < MAX_COMMAND_HISTORY) {
+
+        if(i < 1) {
+            SequentialExecution(current_pid, current_child_status, commands[i]);
+            printf("here\n");
+        }
+        if(commands[i+1].com_pathname_[0] == '\0' && i < MAX_COMMAND_HISTORY) {
+            printf("here2\n");
             switch(current_suffix) {
                 case ';':
+                printf("here3\n");
                     SequentialExecution(current_pid, current_child_status, commands[i+1]);
                 break;
                 case '&':
@@ -115,6 +121,7 @@ void FilterExecution(int current_pid, int *current_child_status, Command command
                     PipeCommand(commands[i+1]);
                 break;
                 default:
+                    printf("here4\n");
                     SequentialExecution(current_pid, current_child_status, commands[i]); 
                     //sequential execution waits for current process to finish, so it's appropriate for default cases 
                     //where only one command is present
