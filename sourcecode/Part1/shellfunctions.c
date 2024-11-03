@@ -14,7 +14,7 @@ void FreeShellVars(char* prompt, char** command_history) {
         free(prompt);
     }
 
-    //free command history
+    //free command history - replace this w the stack implementation later
     for(int current = 0; current < MAX_COMMAND_HISTORY; ++current) {
         if(command_history[current][0] != '\0') {
             free(command_history[current]);

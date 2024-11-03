@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <string.h>
-#include <limits.h>
+#include <linux/limits.h>
 
 #define MAX_COMMAND_HISTORY 100
 #define MAX_STR_SIZE 256
