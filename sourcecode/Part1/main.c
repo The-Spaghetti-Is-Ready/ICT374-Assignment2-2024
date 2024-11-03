@@ -25,6 +25,10 @@ int main()
         
         int numCommands = separateCommands(tokens, commands);
 
+        if(strcmp(current_command.com_pathname_, "exit") == 0) {
+            break;
+        }
+
         for (int i = 0; i < numCommands; ++i)
         {
             printf("Command %d: %s\n", i, commands[i].com_pathname_);
@@ -50,10 +54,6 @@ int main()
                 }
                 waitpid(current_pid, current_child_status, 0); //wait until process changes state/finishes.
             }
-        }
-        
-        if(strcmp(current_command.com_pathname_, "exit") == 0) {
-            break;
         }
     }
     
