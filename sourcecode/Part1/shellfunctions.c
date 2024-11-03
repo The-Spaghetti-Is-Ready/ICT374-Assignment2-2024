@@ -90,7 +90,7 @@ void ConcurrentExecution(Command command) {
     }
 }
 
-void PipeCommand(Command command) {
+void PipeCommand(Command current_command, Command next_command) {
 
 }
 
@@ -116,7 +116,7 @@ void FilterExecution(int current_pid, int *current_child_status, Command command
                     ConcurrentExecution(commands[i+1]);
                 break;
                 case '|':
-                    PipeCommand(commands[i+1]);
+                    PipeCommand(commands[i], commands[i+1]);
                 break;
                 default:
                     printf("here4\n");

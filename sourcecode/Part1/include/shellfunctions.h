@@ -86,7 +86,7 @@ void ConcurrentExecution(Command command);
  * @brief Executes a set of commands and pipes them
  * @param commands the commands to execute
  */
-void PipeCommand(Command command);
+void PipeCommand(Command current_command, Command next_command);
 
 /**
  * @author Marco
