@@ -13,6 +13,7 @@ int main()
     Command commands[MAX_COMMAND_HISTORY];
     char* tokens[MAX_NUM_TOKENS];
     Stack *command_history = create_stack();
+    Node* temp_node = NULL;
     Command current_command = { "", 0, {""}, "", "", NULL };
     
     int current_pid = 0;
@@ -30,8 +31,12 @@ int main()
         int history_index = 0;
         char input_buffer[MAX_STR_SIZE] = {0};
         int input_length = 0;
-
+        // Create temporary node to store the command
+        if(temp_node == NULL) {
+            temp_node = command_history->top;
+        }
         while(read(STDIN_FILENO, &c, 1) == 1 && c != '\n') {
+            
             // If the user presses escape
             if(c == 27) { // can this be a switch case? or is it an if statement cause its only one?
                 printf("Escape key pressed\n");
@@ -43,21 +48,25 @@ int main()
                 if(seq[0] == '[') {
                     if(seq[1] == 'A') {
                         // Up arrow
-                         printf("Up arrow pressed\n");
-                        // if(history_index > 0) {
-                        //     history_index--;
-                           
-                        //     //printf("\r%s", command_history->items[history_index]);
-                        // }
-                    }
-                    else if(seq[1] == 'B') {
+                        printf("Up arrow pressed\n");
+                        if(temp_node->next != NULL) {
+                            temp_node = temp_node->next;
+                        } else {
+                            temp_node = command_history->top;
+                        }
+                        printf("%s\n", temp_node->data);
+                        
+                    } else if(seq[1] == 'B') {
                         // Down arrow
                         printf("Down arrow pressed\n");
-                        // if(history_index < size_of_stack(command_history)) {
-                        //     history_index++;
-                            
-                        //     //printf("\r%s", command_history->items[history_index]);
-                        // }
+                        // grab the data from the previous node
+                        // print that to the screen
+                        if(temp_node->prev != NULL) {
+                            temp_node = temp_node->prev;
+                        } else {
+                            temp_node = command_history->bottom;
+                        }
+                        printf("%s\n", temp_node->data);
                     }
                 }
             } else {
@@ -66,7 +75,6 @@ int main()
                 write(STDOUT_FILENO, &c, 1);
             }
         } 
-
 
         commands[0].com_pathname_ = GetKBInput();
        
