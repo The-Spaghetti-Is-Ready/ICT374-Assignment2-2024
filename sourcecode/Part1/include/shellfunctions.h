@@ -4,7 +4,14 @@
 #include "command.h"
 #include "stack.h"
 
-#include <linux/limits.h>
+#if defined(__linux__)
+    #include <linux/limits.h>
+#elif defined(__APPLE__) && defined(__MACH__)
+    #include <sys/syslimits.h>
+#else
+    #include <limits.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
