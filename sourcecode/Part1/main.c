@@ -6,7 +6,9 @@ extern char **environ;
 
 int main()
 {
+    // Save the current terminal settings
     struct termios terminal_settings;
+
     EnableRawMode(&terminal_settings); // This can go into an init function
 
     char* prompt_name = "";
@@ -35,12 +37,10 @@ int main()
         if(temp_node == NULL) {
             temp_node = command_history->top;
         }
-        while(read(STDIN_FILENO, &c, 1) == 1 && c != '\n') {
-            
+        
+        while(read(STDIN_FILENO, &c, 1) == 1 && c != '\n') { // is there a way to refactor this into a function?
             // If the user presses escape
             if(c == 27) { // can this be a switch case? or is it an if statement cause its only one?
-                printf("Escape key pressed\n");
-
                 char seq[3];
                 if (read(STDIN_FILENO, &seq[0], 1) != 1) continue;
                 if (read(STDIN_FILENO, &seq[1], 1) != 1) continue;
@@ -48,26 +48,31 @@ int main()
                 if(seq[0] == '[') {
                     if(seq[1] == 'A') {
                         // Up arrow
-                        printf("Up arrow pressed\n");
                         if(temp_node->next != NULL) {
                             temp_node = temp_node->next;
                         } else {
                             temp_node = command_history->top;
                         }
-                        printf("%s\n", temp_node->data);
                         
                     } else if(seq[1] == 'B') {
                         // Down arrow
-                        printf("Down arrow pressed\n");
-                        // grab the data from the previous node
-                        // print that to the screen
                         if(temp_node->prev != NULL) {
                             temp_node = temp_node->prev;
                         } else {
                             temp_node = command_history->bottom;
                         }
-                        printf("%s\n", temp_node->data);
                     }
+
+                    if(temp_node != NULL) {
+                        write(STDOUT_FILENO, temp_node->data, strlen(temp_node->data));
+                    }
+                }
+            } else if (c == 127) {
+                // backspace
+                if(input_length > 0) {
+                    input_length--;
+                    input_buffer[input_length] = '\0';
+                    write(STDOUT_FILENO, "\b \b", 3);
                 }
             } else {
                 input_buffer[input_length] = c;
