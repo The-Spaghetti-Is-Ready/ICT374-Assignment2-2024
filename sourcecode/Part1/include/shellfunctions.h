@@ -118,7 +118,7 @@ void FilterExecution(int current_pid, int *current_child_status, Command command
 
 /**
  * @author Niamh
- * @brief Enables raw mode
+ * @brief Enables raw mode by disabling echo and canonical mode
  * 
  * @param orig_termios The original terminal settings
  */
