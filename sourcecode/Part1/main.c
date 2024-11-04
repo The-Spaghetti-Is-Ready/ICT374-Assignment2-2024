@@ -30,7 +30,6 @@ int main()
         printf("%% ");
 
         char c;
-        int history_index = 0;
         char input_buffer[MAX_STR_SIZE] = {0};
         int input_length = 0;
         // Create temporary node to store the command
@@ -125,6 +124,7 @@ int main()
 
     // Here down can be refactored into a cleanup function
     FreeShellVars(prompt_name, command_history);
+    free(temp_node);
     free(commands[0].com_pathname_);
     printf("goodbye.\n");
     DisableRawMode(&terminal_settings);
