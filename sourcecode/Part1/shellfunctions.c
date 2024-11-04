@@ -169,3 +169,12 @@ int ReadKey() {
     read(STDIN_FILENO, &c, 1);
     return c;
 }
+
+enum ArrowKey ReadArrowKey() {
+    int c = ReadKey();
+    char seq[3];
+
+    if (read(STDIN_FILENO, &seq[0], 1) != 1 || seq[0] != '\033') return ARROW_NONE;
+    if (read(STDIN_FILENO, &seq[1], 1) != 1 || seq[1] != '[') return ARROW_NONE;
+    if (read(STDIN_FILENO, &seq[2], 1) != 1) return ARROW_NONE;
+}

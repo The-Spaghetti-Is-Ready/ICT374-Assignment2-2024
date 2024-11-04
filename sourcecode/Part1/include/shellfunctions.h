@@ -22,6 +22,12 @@
     #define MAX_STR_SIZE 4096  // Default to 4096 if neither is available
 #endif
 
+enum ArrowKey {
+    ARROW_UP,
+    ARROW_DOWN,
+    ARROW_NONE
+};
+
 /**
  * @brief Initialize Unix shell environment
  * 
@@ -137,4 +143,7 @@ void DisableRawMode(struct termios* orig_termios);
  * @return The key read
  */
 int ReadKey();
+
+enum ArrowKey ReadArrowKey();
+
 #endif
