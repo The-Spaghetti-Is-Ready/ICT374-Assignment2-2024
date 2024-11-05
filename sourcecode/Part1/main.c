@@ -17,7 +17,8 @@ int main()
     Stack *command_history = create_stack();
     Node* temp_node = NULL;
     Command current_command = { "", 0, {""}, "", "", NULL };
-    
+    bool exit_shell = false;
+
     int current_pid = 0;
     int * current_child_status = 0;
 
@@ -25,7 +26,7 @@ int main()
         initialiseCommand(&commands[i]);
     }
 
-    while(1) {
+    while(!exit_shell) {
         if(prompt_name[0]!= '\0'){ printf("%s ", prompt_name); }
         printf("%% ");
 
@@ -37,7 +38,7 @@ int main()
             temp_node = command_history->top;
         }
         
-        while(read(STDIN_FILENO, &c, 1) == 1 && c != '\n') { // is there a way to refactor this into a function?
+        while(read(STDIN_FILENO, &c, 1) == 1) { // is there a way to refactor this into a function?
             // If the user presses escape
             if(c == 27) { // can this be a switch case? or is it an if statement cause its only one?
                 char seq[3];
@@ -61,9 +62,9 @@ int main()
                             temp_node = command_history->bottom;
                         }
                     }
-
                     if(temp_node != NULL) {
                         write(STDOUT_FILENO, temp_node->data, strlen(temp_node->data));
+                        fflush(stdout);
                     }
                 }
             } else if (c == 127) {
@@ -73,47 +74,51 @@ int main()
                     input_buffer[input_length] = '\0';
                     write(STDOUT_FILENO, "\b \b", 3);
                 }
+            } else if (c == '\n') {
+                if(input_buffer[0] != '\0') {
+                    // strcpy(commands[0].com_pathname_, input_buffer);
+                    commands[0].com_pathname_ = (char*)input_buffer;
+                    tokenise(commands[0].com_pathname_, tokens);
+
+                    int numCommands = separateCommands(tokens, commands);
+        
+                    if(strcmp(commands[0].com_pathname_, "exit") == 0) {
+                        exit_shell = true;
+                    }
+
+                    for (int i = 0; i < numCommands; ++i)
+                    {
+                        AddCommandToHistory(command_history, &commands[i]);   
+                        // if(commands[i].argc_ > 0) {
+                        //     printf("Argc: %d\n", commands[i].argc_);
+                        //     for(int j = 0; j < commands[i].argc_; ++j) {
+                        //         printf("Argv[%d]: %s\n", j, commands[i].argv_[j]);
+                        //     }
+                        // }
+
+                        if(strcmp(commands[i].com_pathname_, "cd") == 0) {
+                            cd(commands[i].argv_[1]);
+                        }
+                        else if(strcmp(commands[i].com_pathname_, "pwd") == 0) {
+                            pwd();
+                        }
+                        else if(strcmp(commands[i].com_pathname_, "prompt") == 0) {
+                            ReplaceString(commands[i].argv_[1], &prompt_name);
+                        }
+                        else {
+                            FilterExecution(current_pid, current_child_status, commands);
+                        }
+                        initialiseCommand(&commands[i]);
+                    }
+                }
+                memset(input_buffer, 0, sizeof(input_buffer));
+                break;
             } else {
                 input_buffer[input_length] = c;
                 input_length++;
                 write(STDOUT_FILENO, &c, 1);
             }
         } 
-
-        commands[0].com_pathname_ = GetKBInput();
-       
-        tokenise(commands[0].com_pathname_, tokens);
-
-        int numCommands = separateCommands(tokens, commands);
-        
-        if(strcmp(commands[0].com_pathname_, "exit") == 0) {
-            break;
-        }
-
-        for (int i = 0; i < numCommands; ++i)
-        {
-            AddCommandToHistory(command_history, &commands[i]);   
-            // if(commands[i].argc_ > 0) {
-            //     printf("Argc: %d\n", commands[i].argc_);
-            //     for(int j = 0; j < commands[i].argc_; ++j) {
-            //         printf("Argv[%d]: %s\n", j, commands[i].argv_[j]);
-            //     }
-            // }
-
-            if(strcmp(commands[i].com_pathname_, "cd") == 0) {
-                cd(commands[i].argv_[1]);
-            }
-            else if(strcmp(commands[i].com_pathname_, "pwd") == 0) {
-                pwd();
-            }
-            else if(strcmp(commands[i].com_pathname_, "prompt") == 0) {
-                ReplaceString(commands[i].argv_[1], &prompt_name);
-            }
-            else {
-                FilterExecution(current_pid, current_child_status, commands);
-            }
-            initialiseCommand(&commands[i]);
-        }
     }
     
     // print out command history stack for testing purposes
@@ -124,7 +129,7 @@ int main()
 
     // Here down can be refactored into a cleanup function
     FreeShellVars(prompt_name, command_history);
-    free(temp_node);
+    //free(temp_node);
     free(commands[0].com_pathname_);
     printf("goodbye.\n");
     DisableRawMode(&terminal_settings);
