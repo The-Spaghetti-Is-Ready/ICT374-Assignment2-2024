@@ -57,6 +57,7 @@ int main()
                             int fd = open(commands[i].argv_[j+1], O_RDONLY);
                             if(fd == -1) {
                                 perror("open");
+                                return (EXIT_FAILURE);
                             }
                             dup2(fd, STDIN_FILENO);
                             close(fd);
@@ -68,12 +69,17 @@ int main()
                     if (strchr(commands[i].argv_[j], '>') != (void*)0) {
                         pid = fork();
                         if(pid == 0) {
-                            int fd = open(commands[i].argv_[j+1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                            int fd = open(commands[i].argv_[j+1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
                             if(fd == -1) {
                                 perror("open");
                             }
 
-                            dup2(fd, STDIN_FILENO);
+                            if (dup2(fd, STDOUT_FILENO) == -1) {
+                                perror("dup2");
+                                close(fd);
+                                return -1; // or handle error
+                            }
+
                             close(fd);
                             exit(0);
                         }
