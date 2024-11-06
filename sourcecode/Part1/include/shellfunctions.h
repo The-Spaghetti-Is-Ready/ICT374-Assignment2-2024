@@ -77,16 +77,14 @@ void AddCommandToHistory(Stack* stack, Command* command);
  * @param stack The structure to retrieve from
  * @param query A string query for searching the structure
  */
-char * StrGetCommandHistory(Stack *stack, const char * query);
+Command StrGetCommandHistory(Stack *stack, char * query);
 
 /**
  * @brief Retrieve a command from the history list
  * @param stack The structure to retrieve from
  * @param query A string query for searching the structure
  */
-char * IntGetCommandHistory(Stack *stack, int query);
-
-void HistoryFetch(Stack *command_history, Command command);
+Command IntGetCommandHistory(Stack *stack, int query);
 
 /**
  * @author Marco
