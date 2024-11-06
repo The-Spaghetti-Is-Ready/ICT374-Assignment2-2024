@@ -42,8 +42,41 @@ int main()
             AddCommandToHistory(command_history, &commands[i]);   
 
                 for(int j = 0; j < commands[i].argc_ -1; ++j) {
-                    if(strchr(commands[i].argv_[j],  '*') != '\0' || strchr(commands[i].argv_[j],  '?') != '\0') {
+                    if(strchr(commands[i].argv_[j],  '*') != (void*)0 || strchr(commands[i].argv_[j],  '?') != (void*)0) {
                            ExpandWildcards(commands[i].argv_[j]);
+                    }
+                }
+
+                pid_t pid;
+                for(int j = 0; j < commands[i].argc_ -1; ++j) {                   
+                    if (strchr(commands[i].argv_[j], '<') != (void*)0) {
+                        // FORK out to a different process
+                         pid = fork();
+                        
+                        if(pid == 0) {
+                            int fd = open(commands[i].argv_[j+1], O_RDONLY);
+                            if(fd == -1) {
+                                perror("open");
+                            }
+                            dup2(fd, STDIN_FILENO);
+                            close(fd);
+                            exit(0);
+                        }
+
+                    }
+
+                    if (strchr(commands[i].argv_[j], '>') != (void*)0) {
+                        pid = fork();
+                        if(pid == 0) {
+                            int fd = open(commands[i].argv_[j+1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                            if(fd == -1) {
+                                perror("open");
+                            }
+
+                            dup2(fd, STDIN_FILENO);
+                            close(fd);
+                            exit(0);
+                        }
                     }
                 }
 
