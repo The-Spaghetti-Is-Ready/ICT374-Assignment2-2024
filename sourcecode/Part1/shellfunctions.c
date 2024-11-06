@@ -111,7 +111,32 @@ void ConcurrentExecution(Command command) {
 }
 
 void PipeCommand(Command current_command, Command next_command) {
+    int pipe_fd[2]; // holds two ends of the pipe: 0 is read, 1 is write
+    pid_t pid;
+    int *status = 0;
 
+    // Create the pipe
+    if (pipe(pipe_fd) == -1) {
+        perror("pipe");
+        exit(1);
+    }
+
+    if ((pid = fork()) < 0) {
+        perror("fork");
+        exit(1);
+    }
+    if (pid == 0) {  // Child process
+        dup2(0, pipe_fd[0]);
+        execvp(current_command.com_pathname_, current_command.argv_);
+        close(pipe_fd[0]);
+    }
+    else {
+        dup2(1, pipe_fd[1]);
+        
+        close(pipe_fd[1]);
+
+    }
+    waitpid(pid, status, 0);
 }
 
 void FilterExecution(int current_pid, int *current_child_status, Command commands[]) {
