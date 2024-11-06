@@ -75,30 +75,31 @@ void AddCommandToHistory(Stack* stack, Command* command) {
 
 char * StrGetCommandHistory(Stack *stack, char* query) {
     Node *temp = stack->top;
-    char * string_found = "";
 
     while(temp != NULL) {
-        
-        char * current_string_line = (char*) malloc (MAX_STR_SIZE * sizeof(char));
-        strcpy(current_string_line, temp->data);
+        if(temp == NULL) {
+            return "";
+        }
 
-        if(strstr(query, current_string_line) != NULL) {
-            string_found = (char*) malloc(strlen(current_string_line) * sizeof(char));
-            strcpy(string_found, current_string_line);
-            free(current_string_line);
+        char * current_str = (char*) malloc (MAX_STR_SIZE * sizeof(char));
+        strcpy(current_str, temp->data);
+
+        if(strstr(query, current_str) != NULL) {
+            return temp->data;
+            free(current_str);
             break;
         }
 
-        free(current_string_line);
+        free(current_str);
+        if(temp->next == NULL) {
+            break;
+        }
         temp = temp->next;
     }
-    if(strcmp(string_found, "") == 0) {
+    if(strcmp(temp->data, "") == 0) {
         printf("Command not found.\n");
-        return "empty";
+        return  "";
     }
-
-    temp = NULL;
-    return string_found;
 }
 
 char * IntGetCommandHistory(Stack *stack, int query) {
@@ -119,25 +120,34 @@ char * IntGetCommandHistory(Stack *stack, int query) {
 }
 
 void HistoryFetch(Stack* command_history, Command command) {
-    char * string_found = "";
-    char *temp_tokens[MAX_NUM_TOKENS];
+    char *full_command = (char*) malloc(MAX_STR_SIZE * sizeof(char));
+    char * temp = command.com_pathname_ + 1;
+
+    strncat(full_command, temp, strlen(temp)); //deconstruct command back to line.
+    for(int i = 1; i < (command.argc_ - 1); ++i) {
+        if(command.argv_[i][0] == '\0') { break; }
+        strcat(full_command, " ");
+        strncat(full_command, 
+            command.argv_[i], 
+            strlen(command.argv_[i])
+        );
+    }
 
     if(atoi(command.com_pathname_ + 1) == 0) {
-        string_found = 
-            StrGetCommandHistory(command_history, command.com_pathname_);
+        char * found = 
+            StrGetCommandHistory(command_history, full_command);
+        printf("Command retrieved: %s\n", found);
     }
     else {
-        int query = atoi(command.com_pathname_);
-        string_found =
+        int query = atoi(full_command);
+        char * found =
             IntGetCommandHistory(command_history, query);
+            printf("Command retrieved: %s\n", found);
     }
-    tokenise(string_found, temp_tokens);
-    printf("%s\n", string_found);
-    printf("%s\n", temp_tokens[0]);
     
     //execvp(string_found, temp_tokens);
-    if(strcmp(string_found, "") != 0) {
-        free(string_found);
+    if(strcmp(full_command, "") != 0) {
+        free(full_command);
     }
 }
 
