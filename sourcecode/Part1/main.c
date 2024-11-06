@@ -35,7 +35,8 @@ int main()
         for (int i = 0; i < numCommands; ++i)
         {
             if(strstr(commands[i].com_pathname_, "!") != NULL) {
-                HistoryFetch(command_history, commands[i]);
+                char * found_str = HistoryFetch(command_history, commands[i]);
+                printf("Found command: %s\n", found_str);
             }
 
             AddCommandToHistory(command_history, &commands[i]);   

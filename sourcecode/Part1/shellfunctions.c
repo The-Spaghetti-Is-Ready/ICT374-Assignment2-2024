@@ -1,5 +1,4 @@
 #include "include/shellfunctions.h"
-#include "include/token.h"
 
 void FreeShellVars(char* prompt,  Stack* command_history) {
     //free prompt name
@@ -59,12 +58,11 @@ void cd(char* path) {
 void AddCommandToHistory(Stack* stack, Command* command) {
     char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
     
-    for(int i = 0; i < command->argc_; ++i) {
+    strncat(commandString, command->com_pathname_, strlen(command->com_pathname_));
+    for(int i = 1; i < command->argc_ - 1; ++i) {
+        strcat(commandString, " ");
         if(command->argv_[i] != NULL) {
-            strcat(commandString, command->argv_[i]);
-            if(i < command->argc_ - 1) {
-                strcat(commandString, " ");
-            }
+            strncat(commandString, command->argv_[i], strlen(command->argv_[i]));
         }
     }
     
@@ -84,7 +82,7 @@ char * StrGetCommandHistory(Stack *stack, char* query) {
         char * current_str = (char*) malloc (MAX_STR_SIZE * sizeof(char));
         strcpy(current_str, temp->data);
 
-        if(strstr(query, current_str) != NULL) {
+        if(strstr(current_str, query) != NULL) {
             return temp->data;
             free(current_str);
             break;
@@ -96,10 +94,8 @@ char * StrGetCommandHistory(Stack *stack, char* query) {
         }
         temp = temp->next;
     }
-    if(strcmp(temp->data, "") == 0) {
-        printf("Command not found.\n");
-        return  "";
-    }
+    printf("Command not found.\n");
+    return  "";
 }
 
 char * IntGetCommandHistory(Stack *stack, int query) {
@@ -114,12 +110,11 @@ char * IntGetCommandHistory(Stack *stack, int query) {
         return temp->data;
     }
 
-    temp = NULL;
     printf("Command not found.\n");
-    return "empty.";
+    return "";
 }
 
-void HistoryFetch(Stack* command_history, Command command) {
+char * HistoryFetch(Stack* command_history, Command command) {
     char *full_command = (char*) malloc(MAX_STR_SIZE * sizeof(char));
     char * temp = command.com_pathname_ + 1;
 
@@ -133,22 +128,23 @@ void HistoryFetch(Stack* command_history, Command command) {
         );
     }
 
-    if(atoi(command.com_pathname_ + 1) == 0) {
+    if(atoi(full_command) == 0) {
         char * found = 
             StrGetCommandHistory(command_history, full_command);
-        printf("Command retrieved: %s\n", found);
+        free(full_command);
+        return found;
     }
     else {
         int query = atoi(full_command);
         char * found =
             IntGetCommandHistory(command_history, query);
-            printf("Command retrieved: %s\n", found);
+        free(full_command);
+        return found;
     }
-    
-    //execvp(string_found, temp_tokens);
     if(strcmp(full_command, "") != 0) {
         free(full_command);
     }
+    return "";
 }
 
 void ExecuteCommand(Command command) {
