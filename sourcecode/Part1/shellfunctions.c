@@ -77,7 +77,7 @@ void ExecuteCommand(Command command) {
     strcat(str_command, "/bin/");
     strcat(str_command, command.com_pathname_);
     
-    execvp(str_command, command.argv_);
+    execvp(command.com_pathname_, command.argv_);
 
     free(str_command); //free parsed command
 }
@@ -132,7 +132,7 @@ void PipeCommand(Command current_command, Command next_command) {
     }
     else {
         dup2(1, pipe_fd[1]);
-        
+        execvp(next_command.com_pathname_,current_command.argv_);
         close(pipe_fd[1]);
 
     }
