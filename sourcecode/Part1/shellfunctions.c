@@ -30,6 +30,8 @@ char * GetKBInput() { //get input from keyboard
     
     input[strcspn(input, "\n")] = '\0'; //remove newline
 
+    fseek(stdin,0,SEEK_END); //clear input buffer
+
     return input;
 }
 
@@ -57,25 +59,101 @@ void cd(char* path) {
 
 void AddCommandToHistory(Stack* stack, Command* command) {
     char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
-    
-    for(int i = 0; i < command->argc_; ++i) {
+    const char null_term = '\0';
+    strncat(commandString, command->com_pathname_, strlen(command->com_pathname_));
+    for(int i = 1; i < command->argc_ - 1; ++i) {
+        strcat(commandString, " ");
         if(command->argv_[i] != NULL) {
-            strcat(commandString, command->argv_[i]);
-            if(i < command->argc_ - 1) {
-                strcat(commandString, " ");
-            }
+            strncat(commandString, command->argv_[i], strlen(command->argv_[i]));
         }
     }
+    strncat(commandString, &null_term, 1);
     
     printf("Command String: %s\n", commandString);
     push_stack(stack, commandString);
     free(commandString);
 }
 
+char * StrGetCommandHistory(Stack *stack, char* query) {
+    Node *temp = stack->top;
+
+    while(temp != NULL) {
+        if(temp == NULL) {
+            return "";
+        }
+
+        char * current_str = (char*) malloc (MAX_STR_SIZE * sizeof(char));
+        strcpy(current_str, temp->data);
+
+        if(strstr(current_str, query) != NULL) {
+            return temp->data;
+            free(current_str);
+            break;
+        }
+
+        free(current_str);
+        if(temp->next == NULL) {
+            break;
+        }
+        temp = temp->next;
+    }
+    printf("Command not found.\n");
+    return  "";
+}
+
+char * IntGetCommandHistory(Stack *stack, int query) {
+    Node *temp = stack->top;
+    int i = 0;
+
+    while(i != query) {
+        temp = temp->next;
+        ++i;
+    }
+    if(strcmp(temp->data, "") != 0) {
+        return temp->data;
+    }
+
+    printf("Command not found.\n");
+    return "";
+}
+
+char * HistoryFetch(Stack* command_history, Command command) {
+    char *full_command = (char*) malloc(MAX_STR_SIZE * sizeof(char));
+    char * temp = command.com_pathname_ + 1;
+
+    strncat(full_command, temp, strlen(temp)); //deconstruct command back to line.
+    for(int i = 1; i < (command.argc_ - 1); ++i) {
+        if(command.argv_[i][0] == '\0') { break; }
+        strcat(full_command, " ");
+        strncat(full_command, 
+            command.argv_[i], 
+            strlen(command.argv_[i])
+        );
+    }
+
+    if(atoi(full_command) == 0) {
+        char * found = 
+            StrGetCommandHistory(command_history, full_command);
+        free(full_command);
+        return found;
+    }
+    else {
+        int query = atoi(full_command);
+        char * found =
+            IntGetCommandHistory(command_history, query);
+        free(full_command);
+        return found;
+    }
+    if(strcmp(full_command, "") != 0) {
+        free(full_command);
+    }
+    return "";
+}
+
 void ExecuteCommand(Command command) {
     char * str_command = (char *) malloc(strlen(command.com_pathname_ + 6) * sizeof(char));
-    strcat(str_command, "/bin/");
-    strcat(str_command, command.com_pathname_);
+    strcpy(str_command, "/bin/");
+    strncat(str_command, command.com_pathname_, strlen(command.com_pathname_));
     
     execvp(str_command, command.argv_);
 
