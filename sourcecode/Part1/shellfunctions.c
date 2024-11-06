@@ -1,4 +1,5 @@
 #include "include/shellfunctions.h"
+#include "include/token.h"
 
 void FreeShellVars(char* prompt,  Stack* command_history) {
     //free prompt name
@@ -72,12 +73,77 @@ void AddCommandToHistory(Stack* stack, Command* command) {
     free(commandString);
 }
 
-Command StrGetCommandHistory(Stack *stack, char * query) {
-    temp = stack->
+char * StrGetCommandHistory(Stack *stack, char* query) {
+    Node *temp = stack->top;
+    char * string_found = "";
+
+    while(temp != NULL) {
+        
+        char * current_string_line = (char*) malloc (MAX_STR_SIZE * sizeof(char));
+        strcpy(current_string_line, temp->data);
+
+        if(strstr(query, current_string_line) != NULL) {
+            string_found = (char*) malloc(strlen(current_string_line) * sizeof(char));
+            strcpy(string_found, current_string_line);
+            free(current_string_line);
+            break;
+        }
+
+        free(current_string_line);
+        temp = temp->next;
+    }
+    if(strcmp(string_found, "") == 0) {
+        printf("Command not found.\n");
+        return "empty";
+    }
+
+    temp = NULL;
+    return string_found;
 }
 
-Command IntGetCommandHistory(Stack *stack, int query) {
+char * IntGetCommandHistory(Stack *stack, int query) {
+    Node *temp = stack->top;
+    char * string_found = (char*) malloc (MAX_STR_SIZE * sizeof(char));
+    int i = 0;
 
+    while(i != query) {
+        temp = temp->next;
+        ++i;
+    }
+    if(strcmp(temp->data, "") != 0) {
+        strcpy(string_found, temp->data);
+    }
+    else {
+        printf("Command not found.\n");
+        free(string_found);
+        return "empty.";
+    }
+    
+    temp = NULL;
+    return string_found;
+}
+
+void HistoryFetch(Stack* command_history, Command command) {
+    char * string_found = "";
+    char *temp_tokens[MAX_NUM_TOKENS];
+
+    if(atoi(command.com_pathname_ + 1) == 0) {
+        string_found = 
+            StrGetCommandHistory(command_history, command.com_pathname_);
+    }
+    else {
+        int query = atoi(command.com_pathname_);
+        string_found =
+            IntGetCommandHistory(command_history, query);
+    }
+    tokenise(string_found, temp_tokens);
+    printf("%s\n", string_found);
+    printf("%s\n", temp_tokens[0]);
+    
+    //execvp(string_found, temp_tokens);
+    if(strcmp(string_found, "") != 0) {
+        free(string_found);
+    }
 }
 
 void ExecuteCommand(Command command) {

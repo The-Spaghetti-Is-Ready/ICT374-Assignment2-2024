@@ -51,6 +51,9 @@ int main()
                     printf("%s\n", pop_stack(command_history));
                 }
             }
+            else if(strstr(commands[i].com_pathname_, "!") != NULL) {
+                HistoryFetch(command_history, commands[i]);
+            }
             else {
                 FilterExecution(current_pid, current_child_status, commands);
             }
