@@ -1,7 +1,7 @@
 #include "include/shellfunctions.h"
 #include "include/token.h"
 #include "include/command.h"
-
+#include <fcntl.h>
 extern char **environ;
 
 int main()
@@ -53,11 +53,23 @@ int main()
                     }
                     
                     if (strchr(commands[i].argv_[j], '<') != '\0') {
+                        int fd = open(commands[i].argv_[j+1], O_RDONLY);
+                        if(fd == -1) {
+                            perror("open");
+                        }
 
+                        dup2(fd, STDIN_FILENO);
+                        close(fd);
                     }
 
                     if (strchr(commands[i].argv_[j], '>') != '\0') {
-                        
+                        int fd = open(commands[i].argv_[j+1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                        if(fd == -1) {
+                            perror("open");
+                        }
+
+                        dup2(fd, STDIN_FILENO);
+                        close(fd);
                     }
                 }
 
