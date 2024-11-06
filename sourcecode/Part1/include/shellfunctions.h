@@ -107,6 +107,11 @@ void PipeCommand(Command current_command, Command next_command);
  */
 void FilterExecution(int current_pid, int *current_child_status, Command commands[]);
 
+/**
+ * @author Niamh
+ * @brief Expands the wildcards given
+ * @param pattern the filename with the wildcard character
+ */
 void ExpandWildcards(const char* pattern);
 
 #endif
