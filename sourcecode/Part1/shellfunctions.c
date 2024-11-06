@@ -103,7 +103,6 @@ char * StrGetCommandHistory(Stack *stack, char* query) {
 
 char * IntGetCommandHistory(Stack *stack, int query) {
     Node *temp = stack->top;
-    char * string_found = (char*) malloc (MAX_STR_SIZE * sizeof(char));
     int i = 0;
 
     while(i != query) {
@@ -111,16 +110,12 @@ char * IntGetCommandHistory(Stack *stack, int query) {
         ++i;
     }
     if(strcmp(temp->data, "") != 0) {
-        strcpy(string_found, temp->data);
+        return temp->data;
     }
-    else {
-        printf("Command not found.\n");
-        free(string_found);
-        return "empty.";
-    }
-    
+
     temp = NULL;
-    return string_found;
+    printf("Command not found.\n");
+    return "empty.";
 }
 
 void HistoryFetch(Stack* command_history, Command command) {

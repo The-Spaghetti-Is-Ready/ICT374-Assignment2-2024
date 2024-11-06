@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <string.h>
-#include <linux/limits.h>
+#include <limits.h>
 
 #define MAX_COMMAND_HISTORY 100
 
@@ -77,14 +77,16 @@ void AddCommandToHistory(Stack* stack, Command* command);
  * @param stack The structure to retrieve from
  * @param query A string query for searching the structure
  */
-Command StrGetCommandHistory(Stack *stack, char * query);
+char * StrGetCommandHistory(Stack *stack, char * query);
 
 /**
  * @brief Retrieve a command from the history list
  * @param stack The structure to retrieve from
  * @param query A string query for searching the structure
  */
-Command IntGetCommandHistory(Stack *stack, int query);
+char * IntGetCommandHistory(Stack *stack, int query);
+
+void HistoryFetch(Stack* command_history, Command command);
 
 /**
  * @author Marco

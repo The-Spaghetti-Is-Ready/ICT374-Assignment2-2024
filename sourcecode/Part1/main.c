@@ -34,6 +34,10 @@ int main()
 
         for (int i = 0; i < numCommands; ++i)
         {
+            if(strstr(commands[i].com_pathname_, "!") != NULL) {
+                HistoryFetch(command_history, commands[i]);
+            }
+
             AddCommandToHistory(command_history, &commands[i]);   
 
             if(strcmp(commands[i].com_pathname_, "cd") == 0) {
@@ -50,9 +54,6 @@ int main()
                 {
                     printf("%s\n", pop_stack(command_history));
                 }
-            }
-            else if(strstr(commands[i].com_pathname_, "!") != NULL) {
-                HistoryFetch(command_history, commands[i]);
             }
             else {
                 FilterExecution(current_pid, current_child_status, commands);
