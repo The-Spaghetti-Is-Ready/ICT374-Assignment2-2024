@@ -51,6 +51,14 @@ int main()
                     if(strchr(commands[i].argv_[j],  '*') != '\0' || strchr(commands[i].argv_[j],  '?') != '\0') {
                            ExpandWildcards(commands[i].argv_[j]);
                     }
+                    
+                    if (strchr(commands[i].argv_[j], '<') != '\0') {
+
+                    }
+
+                    if (strchr(commands[i].argv_[j], '>') != '\0') {
+                        
+                    }
                 }
 
             if(strcmp(commands[i].com_pathname_, "cd") == 0) {
