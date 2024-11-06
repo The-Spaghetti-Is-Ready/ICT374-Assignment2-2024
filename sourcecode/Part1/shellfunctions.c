@@ -30,6 +30,8 @@ char * GetKBInput() { //get input from keyboard
     
     input[strcspn(input, "\n")] = '\0'; //remove newline
 
+    fseek(stdin,0,SEEK_END); //clear input buffer
+
     return input;
 }
 
@@ -57,7 +59,7 @@ void cd(char* path) {
 
 void AddCommandToHistory(Stack* stack, Command* command) {
     char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
-    
+    const char null_term = '\0';
     strncat(commandString, command->com_pathname_, strlen(command->com_pathname_));
     for(int i = 1; i < command->argc_ - 1; ++i) {
         strcat(commandString, " ");
@@ -65,6 +67,7 @@ void AddCommandToHistory(Stack* stack, Command* command) {
             strncat(commandString, command->argv_[i], strlen(command->argv_[i]));
         }
     }
+    strncat(commandString, &null_term, 1);
     
     printf("Command String: %s\n", commandString);
     push_stack(stack, commandString);
