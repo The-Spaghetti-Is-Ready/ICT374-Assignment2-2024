@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <linux/limits.h>
+#include <glob.h>
 
 #define MAX_COMMAND_HISTORY 100
 
@@ -105,5 +106,7 @@ void PipeCommand(Command current_command, Command next_command);
  * @param commands the command list to execute
  */
 void FilterExecution(int current_pid, int *current_child_status, Command commands[]);
+
+void ExpandWildcards(const char* pattern);
 
 #endif

@@ -148,3 +148,6 @@ void FilterExecution(int current_pid, int *current_child_status, Command command
         }
     }
 }
+
+void ExpandWildcards(const char* pattern) {
+}
