@@ -74,8 +74,8 @@ void AddCommandToHistory(Stack* stack, Command* command) {
 
 void ExecuteCommand(Command command) {
     char * str_command = (char *) malloc(strlen(command.com_pathname_ + 6) * sizeof(char));
-    strcat(str_command, "/bin/");
-    strcat(str_command, command.com_pathname_);
+    strcpy(str_command, "/bin/");
+    strncat(str_command, command.com_pathname_, strlen(command.com_pathname_));
     
     execvp(str_command, command.argv_);
 
