@@ -73,37 +73,31 @@ void AddCommandToHistory(Stack* stack, Command* command) {
     free(commandString);
 }
 
-char * StrGetCommandHistory(Stack *stack, char* query) {
+char * StrGetCommandHistory(Stack *stack, const char* query) {
     Node *temp = stack->top;
-    char * string_found = "";
 
     while(temp != NULL) {
-        
-        char * current_string_line = (char*) malloc (MAX_STR_SIZE * sizeof(char));
-        strcpy(current_string_line, temp->data);
-
-        if(strstr(query, current_string_line) != NULL) {
-            string_found = (char*) malloc(strlen(current_string_line) * sizeof(char));
-            strcpy(string_found, current_string_line);
-            free(current_string_line);
+        if(strstr(query, temp->data) != NULL) {
+            printf("here 1\n");
+            return temp->data;
             break;
         }
-
-        free(current_string_line);
-        temp = temp->next;
+        else {
+            temp = temp->next;
+        }
     }
-    if(strcmp(string_found, "") == 0) {
+    if(strcmp(temp->data, "") == 0) {
+        temp = NULL;
         printf("Command not found.\n");
         return "empty";
     }
 
     temp = NULL;
-    return string_found;
+    return "empty";
 }
 
 char * IntGetCommandHistory(Stack *stack, int query) {
     Node *temp = stack->top;
-    char * string_found = (char*) malloc (MAX_STR_SIZE * sizeof(char));
     int i = 0;
 
     while(i != query) {
@@ -111,39 +105,52 @@ char * IntGetCommandHistory(Stack *stack, int query) {
         ++i;
     }
     if(strcmp(temp->data, "") != 0) {
-        strcpy(string_found, temp->data);
+        return temp->data;
     }
     else {
         printf("Command not found.\n");
-        free(string_found);
         return "empty.";
     }
     
     temp = NULL;
-    return string_found;
+    return "empty";
 }
 
-void HistoryFetch(Stack* command_history, Command command) {
+void HistoryFetch(Stack * command_history, Command command) {
     char * string_found = "";
-    char *temp_tokens[MAX_NUM_TOKENS];
+    char * temp_tokens[MAX_NUM_TOKENS];
 
-    if(atoi(command.com_pathname_ + 1) == 0) {
+    char * parsed_arg = (char*) malloc(MAX_STR_SIZE * sizeof(char));
+
+    strcpy(parsed_arg, command.com_pathname_ + 1); //get rid of the '!'
+    for(int i = 1; i < command.argc_ - 1; ++i) {
+        if(strcmp(command.argv_[i], "") == 0) { break ;}
+        strcat(parsed_arg, " ");
+        strncat(parsed_arg, command.argv_[i], strlen(command.argv_[i]));
+    }
+    printf("%s\n", parsed_arg);
+    if(atoi(parsed_arg) == 0) { //if arg is not an integer
         string_found = 
-            StrGetCommandHistory(command_history, command.com_pathname_);
+            StrGetCommandHistory(command_history, parsed_arg);
     }
     else {
-        int query = atoi(command.com_pathname_);
+        int query = atoi(parsed_arg);
         string_found =
             IntGetCommandHistory(command_history, query);
     }
     tokenise(string_found, temp_tokens);
-    printf("%s\n", string_found);
-    printf("%s\n", temp_tokens[0]);
+    printf("here10\n");
+    printf("%s %s\n", string_found, temp_tokens[1]);
     
     //execvp(string_found, temp_tokens);
     if(strcmp(string_found, "") != 0) {
         free(string_found);
+        printf("here4\n");
     }
+    if(strcmp(parsed_arg, "") != 0) {
+        free(parsed_arg);
+    }
+    printf("here3\n");
 }
 
 void ExecuteCommand(Command command) {
