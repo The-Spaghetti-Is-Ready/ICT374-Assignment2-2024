@@ -10,8 +10,7 @@ int main()
     Command commands[MAX_COMMAND_HISTORY];
     char* tokens[MAX_NUM_TOKENS];
     Stack *command_history = create_stack();
-    Command current_command = { "", 0, {""}, "", "", NULL };
-    
+  
     int current_pid = 0;
     int * current_child_status = 0;
 
@@ -30,10 +29,6 @@ int main()
         int numCommands = separateCommands(tokens, commands);
         
         if(strcmp(commands[0].com_pathname_, "exit") == 0) {
-            break;
-        }
-
-        if(strcmp(current_command.com_pathname_, "exit") == 0) {
             break;
         }
 
