@@ -47,6 +47,14 @@ int main()
             //     }
             // }
 
+            if(commands[i].argc_ > 0) {
+                for(int j = 0; j < commands[i].argc_; ++i) {
+                    if(strchr(commands[i].argv_,  '*') != NULL || strchr(commands[i].argv_,  '?') != NULL) {
+                            ExpandWildcards(commands[i].argv_);
+                    }
+                }
+            }
+
             if(strcmp(commands[i].com_pathname_, "cd") == 0) {
                 cd(commands[i].argv_[1]);
             }
