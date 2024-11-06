@@ -148,3 +148,19 @@ void FilterExecution(int current_pid, int *current_child_status, Command command
         }
     }
 }
+
+void ExpandWildcards(const char* pattern) {
+    glob_t glob_results;
+    int flags = 0;
+
+    if(glob(pattern, flags, NULL, &glob_results) == 0) {
+        // iterate over any matches found + display them to the screen
+        for(int i = 0; i < glob_results.gl_pathc; ++i) {
+            printf("%s\n", glob_results.gl_pathv[i]);
+        }
+    } else {
+        printf("No matches found for pattern: %s\n", pattern);
+    }
+
+    globfree(&glob_results);
+}
