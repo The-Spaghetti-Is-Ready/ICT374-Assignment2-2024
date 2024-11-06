@@ -60,7 +60,7 @@ void cd(char* path) {
 void AddCommandToHistory(Stack* stack, Command* command) {
     char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
     const char null_term = '\0';
-    strncat(commandString, command->com_pathname_, strlen(command->com_pathname_));
+    strcpy(commandString, command->com_pathname_);
     for(int i = 1; i < command->argc_ - 1; ++i) {
         strcat(commandString, " ");
         if(command->argv_[i] != NULL) {
@@ -121,7 +121,7 @@ char * HistoryFetch(Stack* command_history, Command command) {
     char *full_command = (char*) malloc(MAX_STR_SIZE * sizeof(char));
     char * temp = command.com_pathname_ + 1;
 
-    strncat(full_command, temp, strlen(temp)); //deconstruct command back to line.
+    strcpy(full_command, temp); //deconstruct command back to line.
     for(int i = 1; i < (command.argc_ - 1); ++i) {
         if(command.argv_[i][0] == '\0') { break; }
         strcat(full_command, " ");
