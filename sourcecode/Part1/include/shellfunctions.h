@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <string.h>
 #include <linux/limits.h>
 #include <glob.h>
@@ -71,6 +72,22 @@ void pwd();
 void cd(char* path);
 
 void AddCommandToHistory(Stack* stack, Command* command);
+
+/**
+ * @brief Retrieve a command from the history list
+ * @param stack The structure to retrieve from
+ * @param query A string query for searching the structure
+ */
+char * StrGetCommandHistory(Stack *stack, char * query);
+
+/**
+ * @brief Retrieve a command from the history list
+ * @param stack The structure to retrieve from
+ * @param query A string query for searching the structure
+ */
+char * IntGetCommandHistory(Stack *stack, int query);
+
+char * HistoryFetch(Stack* command_history, Command command);
 
 /**
  * @author Marco
