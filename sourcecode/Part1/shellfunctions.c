@@ -155,7 +155,7 @@ void ExpandWildcards(const char* pattern) {
 
     if(glob(pattern, flags, NULL, &glob_results) == 0) {
         // iterate over any matches found + display them to the screen
-        for(size_t i = 0; i < glob_results.gl_pathc; ++i) {
+        for(int i = 0; i < glob_results.gl_pathc; ++i) {
             printf("%s\n", glob_results.gl_pathv[i]);
         }
     } else {
