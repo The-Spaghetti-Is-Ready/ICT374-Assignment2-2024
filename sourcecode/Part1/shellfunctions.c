@@ -72,6 +72,14 @@ void AddCommandToHistory(Stack* stack, Command* command) {
     free(commandString);
 }
 
+Command StrGetCommandHistory(Stack *stack, char * query) {
+    temp = stack->
+}
+
+Command IntGetCommandHistory(Stack *stack, int query) {
+
+}
+
 void ExecuteCommand(Command command) {
     char * str_command = (char *) malloc(strlen(command.com_pathname_ + 6) * sizeof(char));
     strcpy(str_command, "/bin/");

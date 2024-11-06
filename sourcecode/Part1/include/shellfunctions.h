@@ -73,6 +73,20 @@ void cd(char* path);
 void AddCommandToHistory(Stack* stack, Command* command);
 
 /**
+ * @brief Retrieve a command from the history list
+ * @param stack The structure to retrieve from
+ * @param query A string query for searching the structure
+ */
+Command StrGetCommandHistory(Stack *stack, char * query);
+
+/**
+ * @brief Retrieve a command from the history list
+ * @param stack The structure to retrieve from
+ * @param query A string query for searching the structure
+ */
+Command IntGetCommandHistory(Stack *stack, int query);
+
+/**
  * @author Marco
  * @brief Executes a command using the 'execl' function.
  * @param command The command to be executed.
