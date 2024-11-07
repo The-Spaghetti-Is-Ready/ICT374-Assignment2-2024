@@ -1,4 +1,4 @@
-CC = gcc
+CC = clang
 CFLAGS = -Iinclude -Wall -Wextra -MMD -MP
 
 INCLUDE_DIR = include

@@ -19,6 +19,7 @@ int main()
     Command current_command = { "", 0, {""}, "", "", NULL };
     bool exit_shell = false;
 
+  
     int current_pid = 0;
     int * current_child_status = 0;
 
@@ -86,15 +87,19 @@ int main()
                         exit_shell = true;
                     }
 
-                    for (int i = 0; i < numCommands; ++i)
-                    {
-                        AddCommandToHistory(command_history, &commands[i]);   
-                        // if(commands[i].argc_ > 0) {
-                        //     printf("Argc: %d\n", commands[i].argc_);
-                        //     for(int j = 0; j < commands[i].argc_; ++j) {
-                        //         printf("Argv[%d]: %s\n", j, commands[i].argv_[j]);
-                        //     }
-                        // }
+        for (int i = 0; i < numCommands; ++i)
+        {
+            if(strstr(commands[i].com_pathname_, "!") != NULL) {
+                ExecuteFromHistory(command_history, commands[i]);
+            }
+
+            AddCommandToHistory(command_history, &commands[i]);   
+
+                for(int j = 0; j < commands[i].argc_ -1; ++j) {
+                    if(strchr(commands[i].argv_[j],  '*') != '\0' || strchr(commands[i].argv_[j],  '?') != '\0') {
+                           ExpandWildcards(commands[i].argv_[j]);
+                    }
+                }
 
                         if(strcmp(commands[i].com_pathname_, "cd") == 0) {
                             cd(commands[i].argv_[1]);
@@ -105,7 +110,13 @@ int main()
                         else if(strcmp(commands[i].com_pathname_, "prompt") == 0) {
                             ReplaceString(commands[i].argv_[1], &prompt_name);
                         }
-                        else {
+                        else if(strcmp(commands[i].com_pathname_, "history") == 0) {
+                while (!empty_stack(command_history))
+                {
+                    printf("%s\n", pop_stack(command_history));
+                }
+            }
+            else {
                             FilterExecution(current_pid, current_child_status, commands);
                         }
                         initialiseCommand(&commands[i]);
@@ -121,11 +132,7 @@ int main()
         } 
     }
     
-    // print out command history stack for testing purposes
-    while (!empty_stack(command_history))
-    {
-        printf("%s\n", pop_stack(command_history));
-    }
+
 
     // Here down can be refactored into a cleanup function
     FreeShellVars(prompt_name, command_history);

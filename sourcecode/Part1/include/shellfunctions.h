@@ -3,6 +3,7 @@
 
 #include "command.h"
 #include "stack.h"
+#include "token.h"
 
 #if defined(__linux__)
     #include <linux/limits.h>
@@ -16,8 +17,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <termios.h>
 #include <unistd.h>
+#include <glob.h>
 
 #define MAX_COMMAND_HISTORY 100
 
@@ -95,8 +98,41 @@ void cd(char* path);
 void AddCommandToHistory(Stack* stack, Command* command);
 
 /**
+ * @brief Retrieve a command from the history list
+ * @param stack The structure to retrieve from
+ * @param query A string query for searching the structure
+ * @return The command that was found in the history stack
+ */
+const char * StrGetCommandHistory(const Stack *stack, char * query);
+
+/**
+ * @brief Retrieve a command from the history list
+ * @param stack The structure to retrieve from
+ * @param query A string query for searching the structure
+ * @return The command that was found in the history stack
+ */
+const char * IntGetCommandHistory(const Stack *stack, int query);
+
+/**
  * @author Marco
- * @brief Executes a command using the 'execl' function.
+ * @brief Fetches a queried command from the history stack
+ * @param command_history The command history stack
+ * @param command The command to be queried in the stack
+ * @return The command that was found in history from query
+ */
+const char * HistoryFetch(const Stack* command_history, Command command);
+
+/**
+ * @author Marco
+ * @brief Executes a command that was fetched from  the command history stack
+ * @param command_history The command history stack
+ * @param command The command specifying the query
+ */
+void ExecuteFromHistory(const Stack * command_history, const Command command);
+
+/**
+ * @author Marco
+ * @brief Executes a command using the 'execvp' function.
  * @param command The command to be executed.
  */
 void ExecuteCommand(Command command);
@@ -152,5 +188,12 @@ void DisableRawMode(struct termios* orig_termios);
 int ReadKey();
 
 enum ArrowKey ReadArrowKey();
+
+/**
+ * @author Niamh
+ * @brief Expands the wildcards given
+ * @param pattern the filename with the wildcard character
+ */
+void ExpandWildcards(const char* pattern);
 
 #endif
