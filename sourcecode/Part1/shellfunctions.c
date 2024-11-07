@@ -59,19 +59,26 @@ void cd(char* path) {
 
 void AddCommandToHistory(Stack* stack, Command* command) {
     char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
-    const char null_term = '\0';
-    strcpy(commandString, command->com_pathname_);
-    for(int i = 1; i < command->argc_ - 1; ++i) {
-        strcat(commandString, " ");
-        if(command->argv_[i] != NULL) {
-            strncat(commandString, command->argv_[i], strlen(command->argv_[i]));
-        }
-    }
-    strncat(commandString, &null_term, 1);
+    CommandToString(command, commandString);
     
     printf("Command String: %s\n", commandString);
     push_stack(stack, commandString);
     free(commandString);
+}
+
+void CommandToString(const Command* command, char* dest) {
+    const char null_term = '\0';
+    strcpy(dest, command->com_pathname_);
+    for(int i = 1; i < command->argc_ - 1; ++i) {
+        if(dest[strlen(dest) - 1] != ' ') {
+            strcat(dest, " ");
+        }
+        
+        if(command->argv_[i] != NULL) {
+            strncat(dest, command->argv_[i], strlen(command->argv_[i]));
+        }
+        strncat(dest, &null_term, 1);
+    }
 }
 
 const char * StrGetCommandHistory(const Stack *stack, char* query) {
@@ -185,6 +192,104 @@ void ExecuteFromHistory(const Stack * command_history, const Command command) {
     free(command_str);
 }
 
+void RedirectOutput(int current_pid, int* current_child_status, Command command) {
+    // fork process
+    if ((current_pid = fork()) <  0) 
+    {
+        perror("fork");
+        exit(1);
+    }
+    
+    if(current_pid == 0) {
+        // Convert to string for popen
+        char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
+        CommandToString(&command, commandString);
+
+        // open the command for reading
+        FILE* fp;
+        char path[MAX_STR_SIZE];
+        
+        if((fp = popen(commandString, "r")) == NULL) {
+            perror("popen");
+            free(commandString);
+            exit(EXIT_FAILURE);
+        }
+
+        // Read the output line by line and save it to the file
+        while(fgets(path, sizeof(path), fp) != NULL) {
+            printf("%s", path);
+        }
+
+        pclose(fp);
+        // free the memory used by the command string
+        free(commandString);
+        exit(0);
+    } 
+    if(current_pid > 0) {
+        waitpid(current_pid, current_child_status, 0); //wait until process changes state/finishes.
+    }
+}
+
+void RedirectInput(int current_pid, int* current_child_status, Command command) {
+    // fork process
+    if((current_pid = fork()) < 0) {
+        perror("fork");
+        exit(1);
+    }
+
+    if(current_pid == 0) {
+        int fd = open(command.redirect_in_, O_RDONLY);
+        if(fd == -1) {
+            perror("open");
+            exit(EXIT_FAILURE);
+        }
+
+        // redirect stdin to the file
+        if(dup2(fd, STDIN_FILENO) == -1) {
+            perror("dup2");
+            close(fd);
+            exit(EXIT_FAILURE);
+        }
+
+        close(fd); // close fd as its not needed anymore
+        ExecuteCommand(command);
+    }
+
+    if(current_pid > 0) {
+        waitpid(current_pid, current_child_status, 0); //wait until process changes state/finishes.
+    }
+}
+
+void RedirectError(int current_pid, int* current_child_status, Command command) {
+    // fork process
+    if((current_pid = fork()) < 0) {
+        perror("fork");
+        exit(1);
+    }
+
+    if(current_pid == 0) {
+        int fd;
+        if((fd = open(command.redirect_err_, O_WRONLY | O_CREAT | O_TRUNC, 0644)) == -1) {
+            perror("open");
+            exit(EXIT_FAILURE);
+        }
+
+        // redirect stderr to the file
+        if(dup2(fd, STDERR_FILENO) == -1) {
+            perror("dup2");
+            close(fd);
+            exit(EXIT_FAILURE);
+        }
+
+        close(fd); // close fd as its not needed anymore
+        ExecuteCommand(command);
+    }
+
+    if(current_pid > 0) {
+        waitpid(current_pid, current_child_status, 0); //wait until process changes state/finishes.
+    }
+}
+
 void ExecuteCommand(Command command) {
     char * str_command = (char *) malloc(strlen(command.com_pathname_ + 6) * sizeof(char));
     strcpy(str_command, "/bin/");
@@ -236,6 +341,21 @@ void FilterExecution(int current_pid, int *current_child_status, Command command
             current_suffix = commands[i].com_suffix_[0];
         }
 
+        if(commands[i].redirect_in_ != NULL) {
+            RedirectInput(current_pid, current_child_status, commands[i]);
+            continue;
+        }
+
+        if(commands[i].redirect_out_ != NULL) {
+            RedirectOutput(current_pid, current_child_status, commands[i]);
+            continue;
+        }
+
+        if(commands[i].redirect_err_ != NULL) {
+            RedirectError(current_pid, current_child_status, commands[i]);
+            continue;
+        }
+
         if(i == 0) {
             SequentialExecution(current_pid, current_child_status, commands[i]);
         }
@@ -268,7 +388,7 @@ void ExpandWildcards(const char* pattern) {
 
     if(glob(pattern, flags, NULL, &glob_results) == 0) {
         // iterate over any matches found + display them to the screen
-        for(int i = 0; i < glob_results.gl_pathc; ++i) {
+        for(size_t i = 0; i < glob_results.gl_pathc; ++i) {
             printf("%s\n", glob_results.gl_pathv[i]);
         }
     } else {

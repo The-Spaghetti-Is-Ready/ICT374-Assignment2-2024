@@ -41,11 +41,11 @@ int main()
             AddCommandToHistory(command_history, &commands[i]);   
 
                 for(int j = 0; j < commands[i].argc_ -1; ++j) {
-                    if(strchr(commands[i].argv_[j],  '*') != '\0' || strchr(commands[i].argv_[j],  '?') != '\0') {
+                    if(strchr(commands[i].argv_[j],  '*') != (void*)0 || strchr(commands[i].argv_[j],  '?') != (void*)0) {
                            ExpandWildcards(commands[i].argv_[j]);
                     }
                 }
-
+                
             if(strcmp(commands[i].com_pathname_, "cd") == 0) {
                 cd(commands[i].argv_[1]);
             }

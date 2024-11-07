@@ -5,6 +5,7 @@ void initialiseCommand(Command *command) {
     command->argc_ = 0;
     command->redirect_in_ = NULL;
     command->redirect_out_ = NULL;
+    command->redirect_err_ = NULL;
     command->com_suffix_ = NULL;
     unsigned long int argv_size = sizeof(command->argv_) / sizeof(command->argv_[0]);  //cache the size calculation.
 
@@ -71,10 +72,16 @@ int separateCommands(char* tokens[], Command commands[]) {
             commands[commandCount].argc_ = last - first + 1;
             commands[commandCount].com_suffix_ = separator;
 
-            // TODO: Account for redirection
             for (int j = 0; j < commands[commandCount].argc_; ++j)
             {
-                if(!isSeparator(tokens[first + j])) {
+                if (!isSeparator(tokens[first + j])) {
+                    if (strcmp(tokens[first + j], "<") == 0) {
+                        commands[commandCount].redirect_in_ = tokens[first + j + 1];
+                    } else if  (strcmp(tokens[first + j], ">") == 0) {
+                        commands[commandCount].redirect_out_ = tokens[first + j + 1];
+                    } else if (strcmp(tokens[first + j], "2>") == 0) {
+                        commands[commandCount].redirect_err_ = tokens[first + j + 1];
+                    }
                     commands[commandCount].argv_[j] = tokens[first + j];
                 }  
             }
