@@ -78,7 +78,7 @@ void CommandToString(const Command* command, char* dest) {
     }
 }
 
-char * StrGetCommandHistory(Stack *stack, char* query) {
+const char * StrGetCommandHistory(const Stack *stack, char* query) {
     Node *temp = stack->top;
 
     while(temp != NULL) {
@@ -101,31 +101,33 @@ char * StrGetCommandHistory(Stack *stack, char* query) {
         }
         temp = temp->next;
     }
-    printf("Command not found.\n");
     return  "";
 }
 
-char * IntGetCommandHistory(Stack *stack, int query) {
+const char * IntGetCommandHistory(const Stack *stack, int query) {
     Node *temp = stack->top;
     int i = 0;
 
     while(i != query) {
-        temp = temp->next;
+        if(temp == NULL) {
+            return "";
+        }
+        if(strcmp(temp->data, "") != 0) {
+            return temp->data;
+        }
+        if(temp->next == NULL) {
+           break;
+        }
         ++i;
     }
-    if(strcmp(temp->data, "") != 0) {
-        return temp->data;
-    }
-
-    printf("Command not found.\n");
     return "";
 }
 
-char * HistoryFetch(Stack* command_history, Command command) {
+const char * HistoryFetch(const Stack* command_history, Command command) {
     char *full_command = (char*) malloc(MAX_STR_SIZE * sizeof(char));
     char * temp = command.com_pathname_ + 1;
 
-    strncat(full_command, temp, strlen(temp)); //deconstruct command back to line.
+    strcpy(full_command, temp); //deconstruct command back to line.
     for(int i = 1; i < (command.argc_ - 1); ++i) {
         if(command.argv_[i][0] == '\0') { break; }
         strcat(full_command, " ");
@@ -136,14 +138,14 @@ char * HistoryFetch(Stack* command_history, Command command) {
     }
 
     if(atoi(full_command) == 0) {
-        char * found = 
+        const char * found = 
             StrGetCommandHistory(command_history, full_command);
         free(full_command);
         return found;
     }
     else {
         int query = atoi(full_command);
-        char * found =
+        const char * found =
             IntGetCommandHistory(command_history, query);
         free(full_command);
         return found;
@@ -152,6 +154,39 @@ char * HistoryFetch(Stack* command_history, Command command) {
         free(full_command);
     }
     return "";
+}
+
+void ExecuteFromHistory(const Stack * command_history, const Command command) {
+    const char * found_str = HistoryFetch(command_history, command);
+    char * command_str = (char*) malloc(MAX_STR_SIZE * sizeof(char));
+
+    strcpy(command_str, found_str);
+
+    char *found_tokens[MAX_NUM_TOKENS];
+    Command commands[MAX_COMMAND_HISTORY];
+
+    int pid = 0;
+    int *current_child_status = 0;
+
+    if(strcmp(command_str, "") != 0) {
+        printf("Found command: %s\n", command_str);
+        
+        for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) {
+            initialiseCommand(&commands[i]);
+        }
+
+        commands[0].com_pathname_ = command_str;
+        printf("%s\n" , commands[0].com_pathname_);
+
+        tokenise(command_str, found_tokens);
+        separateCommands(found_tokens, commands);
+
+        FilterExecution(pid, current_child_status, commands);
+    }
+    else {
+        printf("Command not found.\n");
+    }
+    free(command_str);
 }
 
 void RedirectOutput(int current_pid, int* current_child_status, Command command) {
