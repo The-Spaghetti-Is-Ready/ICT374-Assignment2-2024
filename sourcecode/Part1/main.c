@@ -47,44 +47,59 @@ int main()
                     }
                 }
 
-                pid_t pid;
-                for(int j = 0; j < commands[i].argc_ -1; ++j) {                   
-                    if (strchr(commands[i].argv_[j], '<') != (void*)0) {
-                        // FORK out to a different process
-                         pid = fork();
+                // pid_t pid;
+                // for(int j = 0; j < commands[i].argc_ -1; ++j) {                   
+                //     if (strchr(commands[i].argv_[j], '<') != (void*)0) {
+                //         // FORK out to a different process
+                //          pid = fork();
                         
-                        if(pid == 0) {
-                            int fd = open(commands[i].argv_[j+1], O_RDONLY);
-                            if(fd == -1) {
-                                perror("open");
-                                return (EXIT_FAILURE);
-                            }
-                            dup2(fd, STDIN_FILENO);
-                            close(fd);
-                            exit(0);
-                        }
+                //         if(pid == 0) {
+                //             int fd = open(commands[i].argv_[j+1], O_RDONLY);
+                //             if(fd == -1) {
+                //                 perror("open");
+                //                 return (EXIT_FAILURE);
+                //             }
+                //             dup2(fd, STDIN_FILENO);
+                //             close(fd);
+                //             exit(0);
+                //         }
 
-                    }
+                //     }
 
-                    if (strchr(commands[i].argv_[j], '>') != (void*)0) {
-                        pid = fork();
-                        if(pid == 0) {
-                            int fd = open(commands[i].argv_[j+1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
-                            if(fd == -1) {
-                                perror("open");
-                            }
+                    // if (strchr(commands[i].argv_[j], '>') != (void*)0) {
+                    //     pid = fork();
+                    //     if(pid == 0) {
+                    //         int fd = open(commands[i].argv_[j+1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    //         printf("file: %s\n", commands[i].argv_[j+1]);
+                            
+                    //         if(fd == -1) {
+                    //             perror("open");
+                    //         }
 
-                            if (dup2(fd, STDOUT_FILENO) == -1) {
-                                perror("dup2");
-                                close(fd);
-                                return -1; // or handle error
-                            }
+                    //         // redirect stdout to the file  
+                    //         if (dup2(fd, STDOUT_FILENO) == -1) {
+                    //             perror("dup2");
+                    //             close(fd);
+                    //             return EXIT_FAILURE; // or handle error
+                    //         }
+                    //         close(fd);  // Close the file descriptor since it's duplicated
+                    //         // execute the command
+                    //         //FilterExecution(pid, NULL, commands);
+                    //         // FILE* fp = popen(execvp(commands[i].com_pathname_, commands[i].argv_), "r");
+                    //         // if(fp == NULL) {
+                    //         //     perror("popen");
+                    //         //     return -1;
+                    //         // }
 
-                            close(fd);
-                            exit(0);
-                        }
-                    }
-                }
+
+                    //         // pclose(fp);
+                    //         //close(fd);
+                    //         exit(0);
+                    //     } else {
+                    //         waitpid(pid, NULL, 0);
+                    //     }
+                    // }
+                // }
 
             if(strcmp(commands[i].com_pathname_, "cd") == 0) {
                 cd(commands[i].argv_[1]);

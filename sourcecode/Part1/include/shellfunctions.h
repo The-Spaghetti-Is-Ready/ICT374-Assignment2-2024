@@ -140,6 +140,6 @@ void ExpandWildcards(const char* pattern);
  */
 void CommandToString(const Command* command, char* dest);
 
-void RedirectOutput(Command command);
+void RedirectOutput(int current_pid, int* current_child_status, Command command);
 
 #endif

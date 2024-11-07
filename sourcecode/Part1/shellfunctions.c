@@ -154,8 +154,40 @@ char * HistoryFetch(Stack* command_history, Command command) {
     return "";
 }
 
-void RedirectOutput(Command command) {
+void RedirectOutput(int current_pid, int* current_child_status, Command command) {
+    // fork process
+    if ((current_pid = fork()) <  0) 
+    {
+        perror("fork");
+        exit(1);
+    }
+    if(current_pid == 0)
+    {
+        // Convert to string for popen
+        char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
+        CommandToString(&command, commandString);
 
+        // open the command for reading
+        FILE* fp;
+        char path[MAX_STR_SIZE];
+        fp = popen(commandString, "r");
+
+        if(fp == NULL) {
+            perror("popen");
+            exit(EXIT_FAILURE);
+        }
+
+        // Read the output line by line and save it to the file
+        while(fgets(path, sizeof(path), fp) != NULL) {
+            printf("%s", path);
+        }
+
+        pclose(fp);
+        // free the memory used by the command string
+        free(commandString);
+        exit(0);
+    }
+    waitpid(current_pid, current_child_status, 0); //wait until process changes state/finishes.
 }
 
 void ExecuteCommand(Command command) {
@@ -163,31 +195,6 @@ void ExecuteCommand(Command command) {
     strcpy(str_command, "/bin/");
     strncat(str_command, command.com_pathname_, strlen(command.com_pathname_));
     
-    for(int i = 0; i < command.argc_; ++i) {
-        if(strchr(command.argv_[i], '>') != (void*)0) {
-            // Convert to string for popen
-            char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
-            CommandToString(&command, commandString);
-            
-            // open the command for reading
-            FILE* fp;
-            char path[MAX_STR_SIZE];
-            fp = popen(commandString, "r");
-
-            if(fp == NULL) {
-                perror("popen");
-                exit(EXIT_FAILURE);
-            }
-
-            // Read the output line by line and save it to the file
-            while(fgets(path, sizeof(path), fp) != NULL) {
-                printf("%s", path);
-            }
-            pclose(fp);
-            // free the memory used by the command string
-            free(commandString);
-        }
-    }
     execvp(str_command, command.argv_);
 
     free(str_command); //free parsed command
@@ -232,6 +239,10 @@ void FilterExecution(int current_pid, int *current_child_status, Command command
     for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) { 
         if(commands[i].com_suffix_ != NULL) {
             current_suffix = commands[i].com_suffix_[0];
+        }
+
+        if(commands[i].redirect_out_ != NULL) {
+            RedirectOutput(current_pid, current_child_status, commands[i]);
         }
 
         if(i == 0) {
