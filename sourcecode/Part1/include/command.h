@@ -24,6 +24,9 @@ typedef struct Command {
     char *redirect_out_;     // if this is not NULL, then the standard output
     // is redirected to the given file name
 
+    char *redirect_err_;     // if this is not NULL, then the standard error
+    // is redirected to the given file name
+    
     char *com_suffix_;        // ' ' - no command suffix (last command);
     // '&' - the command is followed by '&'
     // ';' - the command is followed by ';';

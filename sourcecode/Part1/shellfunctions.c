@@ -70,7 +70,10 @@ void CommandToString(const Command* command, char* dest) {
     const char null_term = '\0';
     strcpy(dest, command->com_pathname_);
     for(int i = 1; i < command->argc_ - 1; ++i) {
-        strcat(dest, " ");
+        if(dest[strlen(dest) - 1] != ' ') {
+            strcat(dest, " ");
+        }
+        
         if(command->argv_[i] != NULL) {
             strncat(dest, command->argv_[i], strlen(command->argv_[i]));
         }
@@ -196,8 +199,8 @@ void RedirectOutput(int current_pid, int* current_child_status, Command command)
         perror("fork");
         exit(1);
     }
-    if(current_pid == 0)
-    {
+    
+    if(current_pid == 0) {
         // Convert to string for popen
         char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
         CommandToString(&command, commandString);
@@ -205,10 +208,10 @@ void RedirectOutput(int current_pid, int* current_child_status, Command command)
         // open the command for reading
         FILE* fp;
         char path[MAX_STR_SIZE];
-        fp = popen(commandString, "r");
-
-        if(fp == NULL) {
+        
+        if((fp = popen(commandString, "r")) == NULL) {
             perror("popen");
+            free(commandString);
             exit(EXIT_FAILURE);
         }
 
@@ -221,8 +224,70 @@ void RedirectOutput(int current_pid, int* current_child_status, Command command)
         // free the memory used by the command string
         free(commandString);
         exit(0);
+    } 
+    if(current_pid > 0) {
+        waitpid(current_pid, current_child_status, 0); //wait until process changes state/finishes.
     }
-    waitpid(current_pid, current_child_status, 0); //wait until process changes state/finishes.
+}
+
+void RedirectInput(int current_pid, int* current_child_status, Command command) {
+    // fork process
+    if((current_pid = fork()) < 0) {
+        perror("fork");
+        exit(1);
+    }
+
+    if(current_pid == 0) {
+        int fd = open(command.redirect_in_, O_RDONLY);
+        if(fd == -1) {
+            perror("open");
+            exit(EXIT_FAILURE);
+        }
+
+        // redirect stdin to the file
+        if(dup2(fd, STDIN_FILENO) == -1) {
+            perror("dup2");
+            close(fd);
+            exit(EXIT_FAILURE);
+        }
+
+        close(fd); // close fd as its not needed anymore
+        ExecuteCommand(command);
+    }
+
+    if(current_pid > 0) {
+        waitpid(current_pid, current_child_status, 0); //wait until process changes state/finishes.
+    }
+}
+
+void RedirectError(int current_pid, int* current_child_status, Command command) {
+    // fork process
+    if((current_pid = fork()) < 0) {
+        perror("fork");
+        exit(1);
+    }
+
+    if(current_pid == 0) {
+        int fd;
+        if((fd = open(command.redirect_err_, O_WRONLY | O_CREAT | O_TRUNC, 0644)) == -1) {
+            perror("open");
+            exit(EXIT_FAILURE);
+        }
+
+        // redirect stderr to the file
+        if(dup2(fd, STDERR_FILENO) == -1) {
+            perror("dup2");
+            close(fd);
+            exit(EXIT_FAILURE);
+        }
+
+        close(fd); // close fd as its not needed anymore
+        ExecuteCommand(command);
+    }
+
+    if(current_pid > 0) {
+        waitpid(current_pid, current_child_status, 0); //wait until process changes state/finishes.
+    }
 }
 
 void ExecuteCommand(Command command) {
@@ -276,8 +341,14 @@ void FilterExecution(int current_pid, int *current_child_status, Command command
             current_suffix = commands[i].com_suffix_[0];
         }
 
+        if(commands[i].redirect_in_ != NULL) {
+            RedirectInput(current_pid, current_child_status, commands[i]);
+            continue;
+        }
+
         if(commands[i].redirect_out_ != NULL) {
             RedirectOutput(current_pid, current_child_status, commands[i]);
+            continue;
         }
 
         if(i == 0) {

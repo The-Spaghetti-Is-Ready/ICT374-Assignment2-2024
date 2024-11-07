@@ -158,6 +158,30 @@ void ExpandWildcards(const char* pattern);
  */
 void CommandToString(const Command* command, char* dest);
 
+/**
+ * @author Niamh
+ * @brief Redirects the output of a command to the specified file, and makes a new one if it doesnt exist
+ * @param current_pid the current process id
+ * @param current_child_status the current child status
+ * @param command the command to redirect
+ */
 void RedirectOutput(int current_pid, int* current_child_status, Command command);
 
+/**
+ * @author Niamh
+ * @brief Redirects the input of a command to the specified file
+ * @param current_pid the current process id
+ * @param current_child_status the current child status
+ * @param command the command to redirect
+ */
+void RedirectInput(int current_pid, int* current_child_status, Command command);
+
+/**
+ * @author Niamh
+ * @brief Redirects the error of a command to the specified file
+ * @param current_pid the current process id
+ * @param current_child_status the current child status
+ * @param command the command to redirect
+ */
+void RedirectError(int current_pid, int* current_child_status, Command command);
 #endif
