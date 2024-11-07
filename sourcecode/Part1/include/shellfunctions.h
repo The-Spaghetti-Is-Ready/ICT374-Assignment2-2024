@@ -3,6 +3,7 @@
 
 #include "command.h"
 #include "stack.h"
+#include "token.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -77,21 +78,38 @@ void AddCommandToHistory(Stack* stack, Command* command);
  * @brief Retrieve a command from the history list
  * @param stack The structure to retrieve from
  * @param query A string query for searching the structure
+ * @return The command that was found in the history stack
  */
-char * StrGetCommandHistory(Stack *stack, char * query);
+const char * StrGetCommandHistory(const Stack *stack, char * query);
 
 /**
  * @brief Retrieve a command from the history list
  * @param stack The structure to retrieve from
  * @param query A string query for searching the structure
+ * @return The command that was found in the history stack
  */
-char * IntGetCommandHistory(Stack *stack, int query);
-
-char * HistoryFetch(Stack* command_history, Command command);
+const char * IntGetCommandHistory(const Stack *stack, int query);
 
 /**
  * @author Marco
- * @brief Executes a command using the 'execl' function.
+ * @brief Fetches a queried command from the history stack
+ * @param command_history The command history stack
+ * @param command The command to be queried in the stack
+ * @return The command that was found in history from query
+ */
+const char * HistoryFetch(const Stack* command_history, Command command);
+
+/**
+ * @author Marco
+ * @brief Executes a command that was fetched from  the command history stack
+ * @param command_history The command history stack
+ * @param command The command specifying the query
+ */
+void ExecuteFromHistory(const Stack * command_history, const Command command);
+
+/**
+ * @author Marco
+ * @brief Executes a command using the 'execvp' function.
  * @param command The command to be executed.
  */
 void ExecuteCommand(Command command);
