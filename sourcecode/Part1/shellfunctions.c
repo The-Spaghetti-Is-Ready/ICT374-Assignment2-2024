@@ -68,7 +68,7 @@ void AddCommandToHistory(Stack* stack, Command* command) {
 
 void CommandToString(const Command* command, char* dest) {
     const char null_term = '\0';
-    strncat(dest, command->com_pathname_, strlen(command->com_pathname_));
+    strcpy(dest, command->com_pathname_);
     for(int i = 1; i < command->argc_ - 1; ++i) {
         strcat(dest, " ");
         if(command->argv_[i] != NULL) {
