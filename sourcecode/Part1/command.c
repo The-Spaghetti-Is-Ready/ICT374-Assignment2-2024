@@ -76,6 +76,11 @@ int separateCommands(char* tokens[], Command commands[]) {
             {
                 if(!isSeparator(tokens[first + j])) {
                     commands[commandCount].argv_[j] = tokens[first + j];
+                    if(strcmp(tokens[first + j], "<") == 0) {
+                        commands[commandCount].redirect_in_ = tokens[first + j + 1];
+                    } else if(strcmp(tokens[first + j], ">") == 0) {
+                        commands[commandCount].redirect_out_ = tokens[first + j + 1];
+                    }
                 }  
             }
 
