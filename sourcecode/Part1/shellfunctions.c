@@ -59,19 +59,23 @@ void cd(char* path) {
 
 void AddCommandToHistory(Stack* stack, Command* command) {
     char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
-    const char null_term = '\0';
-    strncat(commandString, command->com_pathname_, strlen(command->com_pathname_));
-    for(int i = 1; i < command->argc_ - 1; ++i) {
-        strcat(commandString, " ");
-        if(command->argv_[i] != NULL) {
-            strncat(commandString, command->argv_[i], strlen(command->argv_[i]));
-        }
-    }
-    strncat(commandString, &null_term, 1);
+    CommandToString(command, commandString);
     
     printf("Command String: %s\n", commandString);
     push_stack(stack, commandString);
     free(commandString);
+}
+
+void CommandToString(const Command* command, char* dest) {
+    const char null_term = '\0';
+    strncat(dest, command->com_pathname_, strlen(command->com_pathname_));
+    for(int i = 1; i < command->argc_ - 1; ++i) {
+        strcat(dest, " ");
+        if(command->argv_[i] != NULL) {
+            strncat(dest, command->argv_[i], strlen(command->argv_[i]));
+        }
+        strncat(dest, &null_term, 1);
+    }
 }
 
 char * StrGetCommandHistory(Stack *stack, char* query) {
@@ -150,11 +154,40 @@ char * HistoryFetch(Stack* command_history, Command command) {
     return "";
 }
 
+void RedirectOutput(Command command) {
+
+}
+
 void ExecuteCommand(Command command) {
     char * str_command = (char *) malloc(strlen(command.com_pathname_ + 6) * sizeof(char));
     strcpy(str_command, "/bin/");
     strncat(str_command, command.com_pathname_, strlen(command.com_pathname_));
     
+    for(int i = 0; i < command.argc_; ++i) {
+        if(strchr(command.argv_[i], '>') != (void*)0) {
+            // Convert to string for popen
+            char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
+            CommandToString(&command, commandString);
+            
+            // open the command for reading
+            FILE* fp;
+            char path[MAX_STR_SIZE];
+            fp = popen(commandString, "r");
+
+            if(fp == NULL) {
+                perror("popen");
+                exit(EXIT_FAILURE);
+            }
+
+            // Read the output line by line and save it to the file
+            while(fgets(path, sizeof(path), fp) != NULL) {
+                printf("%s", path);
+            }
+            pclose(fp);
+            // free the memory used by the command string
+            free(commandString);
+        }
+    }
     execvp(str_command, command.argv_);
 
     free(str_command); //free parsed command
@@ -233,7 +266,7 @@ void ExpandWildcards(const char* pattern) {
 
     if(glob(pattern, flags, NULL, &glob_results) == 0) {
         // iterate over any matches found + display them to the screen
-        for(int i = 0; i < glob_results.gl_pathc; ++i) {
+        for(size_t i = 0; i < glob_results.gl_pathc; ++i) {
             printf("%s\n", glob_results.gl_pathv[i]);
         }
     } else {

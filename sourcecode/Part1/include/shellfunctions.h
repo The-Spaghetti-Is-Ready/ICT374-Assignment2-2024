@@ -132,4 +132,14 @@ void FilterExecution(int current_pid, int *current_child_status, Command command
  */
 void ExpandWildcards(const char* pattern);
 
+/**
+ * @author Niamh
+ * @brief Converts a command to a string
+ * @param command the command to convert
+ * @param dest the destination string
+ */
+void CommandToString(const Command* command, char* dest);
+
+void RedirectOutput(Command command);
+
 #endif
