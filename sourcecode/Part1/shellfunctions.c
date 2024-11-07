@@ -351,6 +351,11 @@ void FilterExecution(int current_pid, int *current_child_status, Command command
             continue;
         }
 
+        if(commands[i].redirect_err_ != NULL) {
+            RedirectError(current_pid, current_child_status, commands[i]);
+            continue;
+        }
+
         if(i == 0) {
             SequentialExecution(current_pid, current_child_status, commands[i]);
         }
