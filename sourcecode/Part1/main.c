@@ -6,23 +6,24 @@ extern char **environ;
 
 int main()
 {
-    char* prompt_name = "";
     Command commands[MAX_COMMAND_HISTORY];
     char* tokens[MAX_NUM_TOKENS];
     Stack *command_history = create_stack();
   
+    char* prompt_name = (char*) malloc(MAX_STR_SIZE * sizeof(char));
+    prompt_name[0] = '\0';
+
     int current_pid = 0;
     int * current_child_status = 0;
+
+    system("clear"); //clean the screen completely
 
     for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) {
         initialiseCommand(&commands[i]);
     }
 
     while(1) {
-        if(prompt_name[0]!= '\0'){ printf("%s ", prompt_name); }
-        printf("%% ");
-
-        commands[0].com_pathname_ = GetKBInput();
+        commands[0].com_pathname_ = ProcessKStreams(prompt_name, command_history);
        
         tokenise(commands[0].com_pathname_, tokens);
 
@@ -40,11 +41,11 @@ int main()
 
             AddCommandToHistory(command_history, &commands[i]);   
 
-                for(int j = 0; j < commands[i].argc_ -1; ++j) {
-                    if(strchr(commands[i].argv_[j],  '*') != (void*)0 || strchr(commands[i].argv_[j],  '?') != (void*)0) {
-                           ExpandWildcards(commands[i].argv_[j]);
-                    }
+            for(int j = 0; j < commands[i].argc_ -1; ++j) {
+                if(strchr(commands[i].argv_[j],  '*') != (void*)0 || strchr(commands[i].argv_[j],  '?') != (void*)0) {
+                        ExpandWildcards(commands[i].argv_[j]);
                 }
+            }
                 
             if(strcmp(commands[i].com_pathname_, "cd") == 0) {
                 cd(commands[i].argv_[1]);
@@ -56,9 +57,11 @@ int main()
                 ReplaceString(commands[i].argv_[1], &prompt_name);
             }
             else if(strcmp(commands[i].com_pathname_, "history") == 0) {
-                while (!empty_stack(command_history))
+                if(!empty_stack(command_history))
                 {
-                    printf("%s\n", pop_stack(command_history));
+                    for(int i = 0; i < command_history->size; ++i) {
+                        printf("\n%s", IntGetCommandHistory(command_history, i));
+                    }
                 }
             }
             else {
@@ -70,7 +73,7 @@ int main()
 
     FreeShellVars(prompt_name, command_history);
     free(commands[0].com_pathname_);
-    printf("goodbye.\n");
+    printf("\ngoodbye.\n");
     
     return 0;
 }

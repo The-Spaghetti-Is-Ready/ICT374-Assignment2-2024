@@ -1,5 +1,26 @@
 #include "include/shellfunctions.h"
 
+struct termios orig_termios;
+
+void DisplayPrompt(const char *prompt) {
+    if(prompt[0] != '\0') { 
+        fprintf(stdout, "\n%s ", prompt); 
+    }
+    fprintf(stdout, "%% ");
+}
+
+void DisableRawMode() {
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+}
+
+void EnableRawMode() {
+    tcgetattr(STDIN_FILENO, &orig_termios);
+    struct termios raw = orig_termios;
+    atexit(DisableRawMode);
+    raw.c_lflag &= ~(ECHO | ICANON); //disable canonical mode for byte-by-byte input
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+}
+
 void FreeShellVars(char* prompt,  Stack* command_history) {
     //free prompt name
     if(prompt[0] != '\0') {
@@ -12,33 +33,79 @@ void FreeShellVars(char* prompt,  Stack* command_history) {
 }
 
 void ReplaceString(char* new_string, char** current_string) {
-
     if(*current_string[0] != '\0')
     {
         free(*current_string); //make string null if it is initialized. Pre-condition is that prompt is in heap.
     }
-    if(new_string[0] != '\0') {
-        *current_string = (char *) malloc(sizeof(new_string) * sizeof(char)); //can allocate here as it would be null by this point
+    if(strcmp(new_string, "") != 0) {
+        *current_string = (char *) malloc(MAX_STR_SIZE * sizeof(char)); //can allocate here as it would be null by this point
         strcpy(*current_string, new_string);
     }
 }
 
-char * GetKBInput() { //get input from keyboard
+char * ProcessKStreams(const char * prompt, Stack *history) { //get input from keyboard
+    
     char * input = (char *) malloc(MAX_STR_SIZE * sizeof(char)); //128 character-limit
-    
-    fgets(input, MAX_STR_SIZE, stdin);
-    
-    input[strcspn(input, "\n")] = '\0'; //remove newline
+    char * buffer = (char *) malloc(MAX_STR_SIZE * sizeof(char)); //128 character-limit
+    int it = 0, current_h_idx = size_of_stack(history);
+    char c; 
 
+    EnableRawMode();
+    DisplayPrompt(prompt);
+    fflush(stdout);
+
+    while((c=getchar())!= '\n') {
+        if(c == 127) {
+            if(it > 0) {
+                buffer[--it] = '\0'; //buffer which contains keyboard input
+            }
+        } else if(c == '\033') {
+            getchar(); // Skip '['
+            c = getchar();
+            switch(c) {
+                case'A':
+                    current_h_idx--;
+                    if(current_h_idx <= 0) {
+                        current_h_idx = size_of_stack(history);
+                    }
+                    strcpy(buffer, IntGetCommandHistory(history, current_h_idx));
+                    it = strlen(IntGetCommandHistory(history, current_h_idx));
+                    break;
+                case 'B':
+                    current_h_idx++;
+                    if(current_h_idx >= size_of_stack(history)) {
+                        current_h_idx = 0;
+                    }
+                    strcpy(buffer, IntGetCommandHistory(history, current_h_idx));
+                    it = strlen(IntGetCommandHistory(history, current_h_idx));
+                    break;
+                default:
+                    break;
+            }
+        } else if (it < MAX_STR_SIZE - 1) { // Add character to buffer
+            buffer[it++] = c;
+            buffer[it] = '\0';
+        }
+        if(prompt[0] != '\0') {
+            //clear the output to screen to update terminal screen with keystrokes/prompt name
+            printf("\33[2K\r%s %% %s", prompt, buffer);
+        } else {
+            printf("\33[2K\r%% %s", buffer);
+        }
+        fflush(stdout);
+    }     
+    DisableRawMode();
+
+    strcpy(input, buffer); // Copy buffer to input to process final command
+    free(buffer);         
     fseek(stdin,0,SEEK_END); //clear input buffer
-
     return input;
 }
 
 void pwd() {
     char cwd[PATH_MAX]; // PATH_MAX is the maximum number of characters in a path name defined in limits.h 
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        printf("Current working dir: %s\n", cwd);
+        printf("\nCurrent working dir: %s\n", cwd);
     } else {
         perror("getcwd() error");
     }
@@ -61,7 +128,6 @@ void AddCommandToHistory(Stack* stack, Command* command) {
     char* commandString = malloc(MAX_STR_SIZE * sizeof(char));
     CommandToString(command, commandString);
     
-    printf("Command String: %s\n", commandString);
     push_stack(stack, commandString);
     free(commandString);
 }
@@ -111,18 +177,16 @@ const char * IntGetCommandHistory(const Stack *stack, int query) {
     Node *temp = stack->top;
     int i = 0;
 
-    while(i != query) {
-        if(temp == NULL) {
-            return "";
-        }
-        if(strcmp(temp->data, "") != 0) {
+    // Traverse the stack up to the desired query index
+    while (temp != NULL) {
+        if (i == query) { // Check if current index matches query
             return temp->data;
         }
-        if(temp->next == NULL) {
-           break;
-        }
+        temp = temp->next; // Move to the next node
         ++i;
     }
+
+    // If the query index is out of range, return an empty string
     return "";
 }
 
@@ -172,7 +236,7 @@ void ExecuteFromHistory(const Stack * command_history, const Command command) {
     int *current_child_status = 0;
 
     if(strcmp(command_str, "") != 0) {
-        printf("Found command: %s\n", command_str);
+        printf("\nFound command: %s\n", command_str);
         
         for(int i = 0; i < MAX_COMMAND_HISTORY; ++i) {
             initialiseCommand(&commands[i]);
@@ -187,7 +251,7 @@ void ExecuteFromHistory(const Stack * command_history, const Command command) {
         FilterExecution(pid, current_child_status, commands);
     }
     else {
-        printf("Command not found.\n");
+        printf("\nCommand not found.\n");
     }
     free(command_str);
 }

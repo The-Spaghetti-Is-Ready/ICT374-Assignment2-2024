@@ -14,6 +14,7 @@
 #include <string.h>
 #include <linux/limits.h>
 #include <glob.h>
+#include <termios.h>
 
 #define MAX_COMMAND_HISTORY 100
 
@@ -26,14 +27,23 @@
 #endif
 
 /**
- * @brief Initialize Unix shell environment
- * 
- * @pre The program executable has been built
- * @post The shell variables are initialized to a usable state
- */
-void Init(char* prompt);
+* @author Marco
+* @brief Puts the terminal back into cooked mode
+* @pre The terminal needs to be in 'raw' mode
+*@post The terminal is put in 'cooked' mode
+*/
+void DisableRawMode();
 
 /**
+ * @author Marco
+ * @brief Puts the terminal in raw mode if not already
+ * @pre Terminal needs to be in 'cooked' mode
+ * @post Puts the terminal in 'raw' mode
+ */
+void EnableRawMode();
+
+/**
+ * @author Marco
  * @brief Frees all the heap-allocated shell variables
  * 
  * @param prompt The shell name
@@ -45,6 +55,7 @@ void Init(char* prompt);
 void FreeShellVars(char* prompt, Stack* command_history);
 
 /**
+ * @author Marco
  * @brief Replaces heap-allocated string with a new specified string.
  * 
  * @param new_string The new string to be put into old string
@@ -56,18 +67,21 @@ void FreeShellVars(char* prompt, Stack* command_history);
 void ReplaceString(char* new_string, char** current_string);
 
 /**
- * @brief Get the Input string from user keyboard
+ * @author Marco
+ * @brief Get the Input/output from keyboard and process using raw mode to allow for character-based input
  * 
  * @return The keyboard input string 
  */
-char * GetKBInput(); 
+char * ProcessKStreams(const char * prompt, Stack *history); 
 
 /**
+ * @author Marco
  * @brief Print the current working directory
  */
 void pwd();
 
 /**
+ * @author Marco
  * @brief Change the current working directory
  * @param path The path to change to
  */
@@ -76,6 +90,7 @@ void cd(char* path);
 void AddCommandToHistory(Stack* stack, Command* command);
 
 /**
+ * @author Marco
  * @brief Retrieve a command from the history list
  * @param stack The structure to retrieve from
  * @param query A string query for searching the structure
@@ -84,6 +99,7 @@ void AddCommandToHistory(Stack* stack, Command* command);
 const char * StrGetCommandHistory(const Stack *stack, char * query);
 
 /**
+ * @author Marco
  * @brief Retrieve a command from the history list
  * @param stack The structure to retrieve from
  * @param query A string query for searching the structure
@@ -184,4 +200,5 @@ void RedirectInput(int current_pid, int* current_child_status, Command command);
  * @param command the command to redirect
  */
 void RedirectError(int current_pid, int* current_child_status, Command command);
+
 #endif

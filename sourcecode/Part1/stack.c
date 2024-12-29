@@ -46,13 +46,14 @@ char *pop_stack(Stack *stack)
     char *str;
 
     if (empty_stack(stack))
-        return NULL;
+        return "";
 
     np = stack->top;
     stack->top = np->next;
     str = np->data;
     free(np); // Free the node itself
     stack->size -= 1;
+    
     return str;
 }
 
