@@ -2,6 +2,13 @@
 
 struct termios orig_termios;
 
+void DisplayEnv(char *envp[]) {
+    for (int i = 0; envp[i] !=NULL; i++) {
+        printf("\n%s", envp[i]);
+    }
+    printf("\n\n");
+}
+
 void DisplayPrompt(const char *prompt) {
     if(prompt[0] != '\0') { 
         fprintf(stdout, "\n%s ", prompt); 
@@ -65,7 +72,7 @@ char * ProcessKStreams(const char * prompt, Stack *history) { //get input from k
             switch(c) {
                 case'A':
                     current_h_idx--;
-                    if(current_h_idx <= 0) {
+                    if(current_h_idx < 0) {
                         current_h_idx = size_of_stack(history);
                     }
                     strcpy(buffer, IntGetCommandHistory(history, current_h_idx));
@@ -73,7 +80,7 @@ char * ProcessKStreams(const char * prompt, Stack *history) { //get input from k
                     break;
                 case 'B':
                     current_h_idx++;
-                    if(current_h_idx >= size_of_stack(history)) {
+                    if(current_h_idx > size_of_stack(history)) {
                         current_h_idx = 0;
                     }
                     strcpy(buffer, IntGetCommandHistory(history, current_h_idx));
@@ -359,6 +366,7 @@ void ExecuteCommand(Command command) {
     strcpy(str_command, "/bin/");
     strncat(str_command, command.com_pathname_, strlen(command.com_pathname_));
     
+    printf("\n");
     execvp(str_command, command.argv_);
 
     free(str_command); //free parsed command

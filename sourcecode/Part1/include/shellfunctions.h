@@ -27,6 +27,13 @@
 #endif
 
 /**
+ * @author Marco
+ * @brief Displays the environment variables. Used for seeing if the env variables are properly inherited.
+ * @param envp The environment variables
+ */
+void DisplayEnv(char *envp[]);
+
+/**
 * @author Marco
 * @brief Puts the terminal back into cooked mode
 * @pre The terminal needs to be in 'raw' mode
